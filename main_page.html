@@ -20,19 +20,24 @@
     <title>A&A shopping fr</title>
   </head>
   <body>
-    <header id="navbar">
-      <img id="logo" src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
-
-      <textarea id="search-bar"></textarea>
-
-      <article id="cart">
+    <header>
+      <div id="logo">
         <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
-        <p>x items in cart</p>
-      </article>
-
-      <article id="user-profile">
-        <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
-      </article>
+        <h1>AYAF & Company</h1>
+      </div>
+      <nav>
+        <ul class="nav_elements">
+          <li id="cart">
+            <p>cart</p>
+          </li>
+          <li>
+            <input id="search-bar" type="text" placeholder="Search..">
+          </li>
+          <li id="user-profile">
+            <p>Log In/Sign Up</p>
+          </li>
+        </ul>
+      <nav>
     </header>
 
     <section id="search">
@@ -85,8 +90,10 @@
     </section>
 
     <section id="user" class="hidden">
-      <label><input value="login" type="radio" name="login">Log In</label>
-      <label><input value="signup" type="radio" name="login">Sign up</label>
+      <article id="options">
+        <label><input value="login" type="radio" name="login" checked="checked">Log In</label>
+        <label><input value="signup" type="radio" name="login">Sign up</label>
+      </article>
 
       <section id="login">
         <p>Username: </p>
