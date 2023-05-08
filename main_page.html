@@ -30,7 +30,7 @@
         <p>x items in cart</p>
       </article>
 
-      <article id="user">
+      <article id="user-profile">
         <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
       </article>
     </header>
@@ -82,7 +82,35 @@
       <button id="check-out">Check Out</button>
     </section>
 
-    <section id="login"></section>
+    <section id="user">
+      <label><input value="login" type="radio" name="login">Log In</label>
+      <label><input value="signup" type="radio" name="login">Sign up</label>
+
+      <section id="login">
+        <textarea id="username"></textarea>
+        <textarea id="password"></textarea>
+
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+
+        <button>Log in</button>
+      </section>
+
+      <section id="signup" class="hidden">
+        <textarea id="username"></textarea>
+        <textarea id="password"></textarea>
+        <textarea id="confirm-pass"></textarea>
+
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+
+        <button>Sign up</button>
+      </section>
+    </section>
 
     <section id="billing"></section>
   </body>
