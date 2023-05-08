@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!--
+  Name: Alexander Yuan
+  Date: 3/31/2023
+  Section: AF (Donovan & Sonia)
+
+  This file contains the HTML for a protytpe pokedex. It contains the UI to search for pokemon.
+  It also contains a display section where the pokemon are displayed. It also contains a section
+  to display more in-depth stats of a pokemon. Finally it contains an error message in case
+  an error appears.
+  -->
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles.css">
+    <script src="index.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital@1&display=swap"
+    rel="stylesheet">
+    <title>AYAF & Company: Internet Goods</title>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul id="nav_elements">
+          <li id="logo">
+            <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
+            <h1>AYAF & Company</h1>
+          </li>
+          <li id="cart">
+            <p>Cart</p>
+          </li>
+          <li>
+            <input id="search-bar" type="text" placeholder="Search..">
+          </li>
+          <li id="user-profile">
+            <p>Log In/Sign Up</p>
+          </li>
+        </ul>
+      <nav>
+    </header>
+
+    <section id="search">
+      <section id="filters">
+        //Create a bunch of buttons and put them here with filterable things (probably get them from online)
+      </section>
+
+      <section id="item-display">
+        <section class="main-item">
+          <h1>Sample item</h1>
+          <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
+        </section>
+        <section class="main-item">
+          <h1>Sample item</h1>
+          <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
+        </section>
+        <section class="main-item">
+          <h1>Sample item</h1>
+          <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
+        </section>
+        <section class="main-item">
+          <h1>Sample item</h1>
+          <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
+        </section>
+      </section>
+    </section>
+
+    <section id="specific-display" class="hidden">
+      <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
+      <h1>Product Name</h1>
+      <p>Price here</p>
+      <p>Product description somehow</p>
+
+      <section id="reviews">
+        <article>
+          <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
+          <p>Review here. wowowowowo!</p>
+        </article>
+      </section>
+
+      <button id="add-cart">Add To Cart</button>
+    </section>
+
+    <section id="check-out" class="hidden">
+      <section id="products">
+        <article class="checkout-product">
+          <p>SampleProduct</p>
+          <p>Price</p>
+        </article>
+      </section>
+
+      <article id="total">
+        <p>Total Price: Some number</p>
+      </article>
+
+      <article id="coupons">
+        <textarea></textarea>
+
+        <button id="coupon">Apply Coupon</button>
+      </article>
+      <button id="check-out">Check Out</button>
+    </section>
+
+    <section id="user" class="hidden">
+      <article id="options">
+        <label><input value="login" type="radio" name="login" checked="checked">Log In</label>
+        <label><input value="signup" type="radio" name="login">Sign up</label>
+      </article>
+
+      <section id="login">
+        <p>Username: </p>
+        <input id="login-username">Insert Username Here</textarea>
+        <p>Password: </p>
+        <input id="login-password">Insert Password Here</textarea>
+
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+
+        <button>Log in</button>
+      </section>
+
+      <section id="signup" class="hidden">
+        <p>Username: </p>
+        <input id="signup-username">Insert Username Here</textarea>
+        <p>Password: </p>
+        <input id="signup-password">Insert Password Here</textarea>
+        <p>Reconfirm Password: </p>
+        <input id="confirm-password">Confirm Password Here</textarea>
+
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+
+        <button>Sign up</button>
+      </section>
+    </section>
+  </body>
+</html>
