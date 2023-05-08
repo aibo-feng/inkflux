@@ -13,7 +13,6 @@
 (function() {
   let prevPage = "search";
   let prevLoginSignUp = "login";
-  let loggedIn = false;
 
   window.addEventListener("load",init);
 
@@ -31,11 +30,33 @@
     id("back-btn").addEventListener("click", function() {
       showPage("search");
     });
+    qs("#login button").addEventListener("click", login);
+    qs("#signup button").addEventListener("click", signup);
 
     let radioArray = qsa("#options input");
     radioArray.forEach(function(button) {
       button.addEventListener("change", showLoginOrSignUp)
     })
+  }
+
+  async function login() {
+    let username = id("login-username").textContent;
+    let password = id("login-password").textContent;
+
+    //Some sort of connection to database to check whether or not the fields exists
+
+    //if either the username or password are invalid
+    //id("login-error").classList.remove("hidden");
+  }
+
+  async function signup() {
+    let username = id("signup-username").textContent;
+    let password = id("logup-password").textContent;
+    let confirmPassword = id("logup-password").textContent;
+
+    //Some sort of connection to database to check whether or not it exists
+
+    //Some sort of error handling
   }
 
   /**
