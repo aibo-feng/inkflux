@@ -13,6 +13,7 @@
 (function() {
   let prevPage = "search";
   let prevLoginSignUp = "login";
+  let loggedIn = false;
 
   window.addEventListener("load",init);
 
@@ -20,12 +21,15 @@
    * Initializes the search button once loaded
    */
   function init() {
-    id("search-bar").addEventListener("click", search)
+    id("search-btn").addEventListener("click", search)
     id("cart").addEventListener("click", function() {
       showPage("check-out");
     })
     qs("#user-profile p").addEventListener("click", function() {
       showPage("user");
+    });
+    id("back-btn").addEventListener("click", function() {
+      showPage("search");
     });
 
     let radioArray = qsa("#options input");
@@ -50,9 +54,10 @@
    * Searches for items containing the name specified in the search bar and displays them
    */
   async function search() {
-    //NOT YET IMPLEMENTED
     showPage("search");
+    let item = id("search-bar").textContent;
 
+    //Will pull from the database to display the items
   }
 
   /**
