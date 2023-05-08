@@ -26,15 +26,15 @@
         <h1>AYAF & Company</h1>
       </div>
       <nav>
-        <ul id="nav_elements">
-          <li>
-            <a href="#">Cart</a>
+        <ul class="nav_elements">
+          <li id="cart">
+            <p>cart</p>
           </li>
           <li>
-            <input id="searchbar" type="text" placeholder="Search..">
+            <input id="search-bar" type="text" placeholder="Search..">
           </li>
           <li id="user-profile">
-            <a href="#">My Profile</a>
+            <p>Log In/Sign Up</p>
           </li>
         </ul>
       <nav>
@@ -90,8 +90,10 @@
     </section>
 
     <section id="user" class="hidden">
-      <label><input value="login" type="radio" name="login">Log In</label>
-      <label><input value="signup" type="radio" name="login">Sign up</label>
+      <article id="options">
+        <label><input value="login" type="radio" name="login" checked="checked">Log In</label>
+        <label><input value="signup" type="radio" name="login">Sign up</label>
+      </article>
 
       <section id="login">
         <p>Username: </p>

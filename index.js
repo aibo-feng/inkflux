@@ -11,7 +11,8 @@
 "use strict";
 
 (function() {
-  const POKEMON_API_URL = "https://pokeapi.co/api/v2/";
+  let prevPage = "search";
+  let prevLoginSignUp = "login";
 
   window.addEventListener("load",init);
 
@@ -19,126 +20,50 @@
    * Initializes the search button once loaded
    */
   function init() {
-    qs("button").addEventListener("click", searchGeneration);
-  }
+    id("search-bar").addEventListener("click", search)
+    id("cart").addEventListener("click", function() {
+      showPage("check-out");
+    })
+    qs("#user-profile p").addEventListener("click", function() {
+      showPage("user");
+    });
 
-  /**
-   * Fetches the data of the selected generation and adds the pokemon
-   */
-  async function searchGeneration() {
-    id("display-all").innerHTML = "";
-    showBoard();
-    try {
-      let result = await fetch(POKEMON_API_URL + qs("select").value);
-      await statusCheck(result);
-      result = await result.json();
-
-      await addPokemon(result.pokemon_species);
-    } catch {
-      handleError();
-    }
-  }
-
-  /**
-   * Creates a "card" for each pokemon in the pokemon array containing the name and a sprite
-   * image.
-   * @param {Array} pokemon Array containing all the pokemon from a user-selected generation
-   */
-  async function addPokemon(pokemon) {
-    pokemon.forEach(async function(poke) {
-      let article = gen("article");
-      article.addEventListener("click", showSpecifics);
-
-      let pTag = gen("p");
-      pTag.textContent = poke.name;
-
-      article.appendChild(pTag);
-      article.appendChild(await grabSprite(poke.name));
-      id("display-all").appendChild(article);
+    let radioArray = qsa("#options input");
+    radioArray.forEach(function(button) {
+      button.addEventListener("change", showLoginOrSignUp)
     })
   }
 
   /**
-   * Grabs the sprite of a pokemon name passed in and returns an image containing that sprite
-   * @param {String} name name of the pokemon whose sprite is to be grabbed
-   * @returns an img HTML tag of the pokemon's sprite
+   * Shows the login or sign up option depending on which radio button is selected
    */
-  async function grabSprite(name) {
-    try {
-      let result = await fetch(POKEMON_API_URL + "pokemon\\" + name);
-      await statusCheck(result);
-      result = await result.json();
-
-      let img = gen("img");
-      img.src = result.sprites.front_default;
-      img.alt = name;
-      return img;
-    } catch {
-      handleError();
+  function showLoginOrSignUp() {
+    let loginType = this.value;
+    if(loginType !== prevLoginSignUp) {
+      id(loginType).classList.remove("hidden");
+      id(prevLoginSignUp).classList.add("hidden");
+      prevLoginSignUp = loginType;
     }
   }
 
   /**
-   * Handles displaying the pokedex entries from all regions of the pokemon clicked on by the
-   * user
+   * Searches for items containing the name specified in the search bar and displays them
    */
-  async function showSpecifics() {
-    id("specific-display").innerHTML = "";
-    qs("button").disabled = true;
-    swapViews();
+  async function search() {
+    //NOT YET IMPLEMENTED
+    showPage("search");
 
-    try {
-      let result = await fetch(POKEMON_API_URL + "pokemon-species\\" + this.querySelector("p").textContent);
-      await statusCheck(result);
-      result = await result.json();
-      result = result.flavor_text_entries;
+  }
 
-      let article = gen("article");
-      for(let i = 0; i < result.length; i++) {
-        if(result[i].language.name == "en") {
-          let entry = result[i++];
-          let description = gen("p");
-          description.textContent = "Pokemon " + entry.version.name + ": " + entry.flavor_text;
-          article.appendChild(description);
-        }
-      }
-
-      id("specific-display").appendChild(article);
-    } catch {
-      handleError();
+  /**
+   * Displays the specified page for the user and hides the previous page
+   */
+  function showPage(page) {
+    if(page !== prevPage) {
+      id(page).classList.remove("hidden");
+      id(prevPage).classList.add("hidden");
+      prevPage = page;
     }
-
-    let backButton = gen("button");
-    backButton.textContent = "Back Button";
-    backButton.addEventListener("click", function() {
-      swapViews();
-      qs("button").disabled = false;
-    });
-    id("specific-display").appendChild(backButton);
-  }
-
-  /**
-   * Swaps the views between the pokemon display and the specific pokemon display
-   */
-  function swapViews() {
-    id("display-wrapper").classList.toggle("hidden");
-    id("specific-display").classList.toggle("hidden");
-  }
-
-  /**
-   * Hides the error message and shows the main website content
-   */
-  function showBoard() {
-    id("display").classList.remove("hidden");
-    id("error").classList.add("hidden");
-  }
-
-  /**
-   * Displays the error message in case of an error and hides the main website content
-   */
-  function handleError() {
-    id("display").classList.add("hidden");
-    id("error").classList.remove("hidden");
   }
 
   /**
