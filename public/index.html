@@ -27,14 +27,23 @@
             <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
             <h1>AYAF & Company</h1>
           </li>
-          <li id="cart">
-            <img src="https://media.istockphoto.com/id/1206806317/vector/shopping-cart-icon-isolated-on-white-background.jpg?s=1024x1024&w=is&k=20&c=OFQfvkU48JTYo1aehyB1kPX7sh2CjA5I66Pdmc9qxho="
-            alt="Photo of shopping cart">
-            <p>My Cart</p>
-          </li>
           <li>
-            <input id="search-bar" type="text" placeholder="Search..">
+            <span>Search By: </span>
+            <select>
+              <option value="name">Name</option>
+              <option value="author">Author</option>
+              <option value="subject">Subject</option>
+            </select>
+            <input id="search-bar" type="text" placeholder="Search...">
             <button id="search-btn">Search</button>
+          </li>
+          <li id="cart">
+            <img src="img/shopping-cart.png"
+            alt="Photo of shopping cart">
+            <p>Cart</p>
+          </li>
+          <li id="transaction-history">
+            <p>Transaction History</p>
           </li>
           <li id="user-profile">
             <p>Log In/Sign Up</p>
@@ -46,43 +55,24 @@
 
     <section id="search">
       <section id="filters">
-        //Create a bunch of buttons and put them here with filterable things (probably get them from online)
+        <span>Filter Products By: </span>
+        <span value="author">Author</span>
+        <span value="subject">Subject</span>
+        <span value="price">Price</span>
+        <span>Name</span>
       </section>
 
+      <article id="view-options">
+        <span>Item View Format: </span>
+        <label><input value="cozy" type="radio" name="view" checked="checked">Cozy</label>
+        <label><input value="compact" type="radio" name="view">Compact</label>
+      </article>
+
       <section id="item-display">
-        <section class="main-item">
-          <h1>Sample item</h1>
-          <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
-        </section>
-        <section class="main-item">
-          <h1>Sample item</h1>
-          <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
-        </section>
-        <section class="main-item">
-          <h1>Sample item</h1>
-          <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
-        </section>
-        <section class="main-item">
-          <h1>Sample item</h1>
-          <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
-        </section>
       </section>
     </section>
 
     <section id="specific-display" class="hidden">
-      <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
-      <h1>Product Name</h1>
-      <p>Price here</p>
-      <p>Product description somehow</p>
-
-      <section id="reviews">
-        <article>
-          <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
-          <p>Review here. wowowowowo!</p>
-        </article>
-      </section>
-
-      <button id="add-cart">Add To Cart</button>
     </section>
 
     <section id="check-out" class="hidden">
@@ -97,12 +87,24 @@
         <p>Total Price: Some number</p>
       </article>
 
-      <article id="coupons">
-        <textarea></textarea>
+      <button id="check-out">Purchase selected items</button>
+      <button id="check-out-all">Purchase all items</button>
 
-        <button id="coupon">Apply Coupon</button>
+      <article id="confirm-purchase" class="hidden">
+        <p>Please confirm your purchase?</p>
+        <button id="sure">Yes</button>
+        <button id="not-sure">No</button>
       </article>
-      <button id="check-out">Check Out</button>
+
+      <p id="confirmation-number" class="hidden">Your confirmation number for this purchase is: </p>
+    </section>
+
+    <section id="history" class="hidden">
+      <h1>Transaction History</h1>
+      <article class="purchase">
+        <p>Confirmation Id: </p>
+        <p>U</p>
+      </article>
     </section>
 
     <section id="user" class="hidden">
@@ -113,9 +115,9 @@
 
       <section id="login">
         <p>Username: </p>
-        <input id="login-username">Insert Username Here</textarea>
+        <input id="login-username" type="text"></textarea>
         <p>Password: </p>
-        <input id="login-password">Insert Password Here</textarea>
+        <input id="login-password" type="password"></textarea>
         <p id="login-error" class="hidden">It seems either your username or password were incorrect,
           please try again</p>
 
@@ -128,12 +130,14 @@
       </section>
 
       <section id="signup" class="hidden">
+        <p>Email: </p>
+        <input id="signup-email" type="text"></textarea>
         <p>Username: </p>
-        <input id="signup-username">Insert Username Here</textarea>
+        <input id="signup-username" type="text"></textarea>
         <p>Password: </p>
-        <input id="signup-password">Insert Password Here</textarea>
+        <input id="signup-password" type="password"></textarea>
         <p>Reconfirm Password: </p>
-        <input id="confirm-password">Confirm Password Here</textarea>
+        <input id="confirm-password" type="password"></textarea>
 
         <label class="switch">
           <input type="checkbox">
@@ -142,6 +146,8 @@
 
         <button>Sign up</button>
       </section>
+
+      <p id="resultmsg"></p>
     </section>
   </body>
 </html>
