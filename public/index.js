@@ -18,7 +18,7 @@
   let PRODUCTS = "/inkflux/products";
   let LOGIN = "/inkflux/login";
   let SIGNUP = "/inkflux/signup";
-  let CART = "/influx/getcart/";
+  let CART = "/inkflux/getcart/";
   let PURCHASE = "/inkflux/buy"
 
   window.addEventListener("load",init);
@@ -40,9 +40,13 @@
     id("back-btn").addEventListener("click", function() {
       showPage("search");
     });
+    id("sure").addEventListener("click", buyItems);
+    id("not-sure").addEventListener("click", function() {
+      id("confirm-purchase").classList.add("hidden");
+    });
     id("check-out").addEventListener("click", activateConfirmation);
     id("select-all").addEventListener("click", function() {
-      for(item of qsa(".checkout-product")) {
+      for(const item of qsa(".checkout-product")) {
         item.classList.add("selected");
       }
     });
@@ -65,10 +69,6 @@
    */
   function activateConfirmation() {
     id("confirm-purchase").classList.remove("hidden");
-    id("sure").addEventListener("click", buyItems);
-    id("not-sure").addEventListener("click", function() {
-      id("confirm-purchase").classList.add("hidden");
-    });
     calculateAndUpdateTotalPrice();
   }
 
@@ -79,10 +79,11 @@
   function calculateAndUpdateTotalPrice() {
     let itemArray = qsa(".selected");
     let totalPrice = 0;
-    for(item of itemArray) {
+    for(const item of itemArray) {
       let pTags = item.querySelectorAll("p");
       let priceString = pTags[2];
-      let price = priceString.trim().split(":")[1];
+      let price = priceString.trim();
+      price = price.split(":")[1]
       totalPrice += price;
     }
     id("total").textContent = "Total Price: " + totalPrice;
@@ -96,7 +97,7 @@
     id("confirm-purchase").classList.add("hidden");
     let itemArray = qsa(".selected");
     let ISBNArray = [];
-    for(item of itemArray) {
+    for(const item of itemArray) {
       let pTags = item.querySelectorAll("p");
       let ISBN = pTags[0];
       ISBNArray.push(ISBN);
@@ -136,7 +137,7 @@
    * @param {Array} itemJsonArray Array of the json of the item or items in the users cart
    */
   function displayCart(itemJsonArray) {
-    for(item of itemJsonArray) {
+    for(const item of itemJsonArray) {
       let itemCard = gen("article");
       itemCard.classList.add("checkout-product");
       itemCard.id = item.isbn;
@@ -227,7 +228,7 @@
    * @param {boolean} isSpecific whether or not we need more specific data
    */
   function displayItems(itemArray, isSpecific) {
-    for(itemJson of itemArray) {
+    for(const itemJson of itemArray) {
       let itemCard = gen("article");
       if (isSpecific) {
       } else {
@@ -366,7 +367,7 @@
     let view = this.value;
     if(view !== prevViewOption) {
       let productArray = qsa(".main-item");
-      for(item of productArray) {
+      for(const item of productArray) {
         item.classList.remove(prevViewOption);
         item.classList.add(view);
       }
