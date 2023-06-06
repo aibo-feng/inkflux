@@ -8,65 +8,61 @@ const sqlite3 = require('sqlite3');
 
 const multer = require('multer');
 
-app.use(express.urlencoded({ extended: true }));
+const SERVER_ERROR = 500;
+const BAD_REQUEST = 400;
+
+const DEFAULT_PORT = 8000;
+
+app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(multer().none());
 
-app.get('/helloworld', async (req, res) => {
+app.get('/inkflux/products', async (req, res) => {
   try {
-    let query = "SELECT * FROM staff WHERE id > 123";
-    // access the db
-    let db = await getDBConnection();
-    // query for data
-    let results = await db.get(query);
-    console.log(results);
-    if (results) { } else { }
-    await db.close();
-    res.json(results);
-  } catch (err) {
-    // status code
-    res.status(500);
-    res.type('text').send('something went wrong');
-  }
-});
+    let sqlQuery = "SELECT * FROM items";
+    let query = "";
 
-app.post('/post', async (req, res) => {
-  try {
-    let name = req.body.name;
-    // let age = req.body.age;
-    // add data to the database
-    let db = await getDBConnection();
-    let allResult = "SELECT * FROM staff";
-    let allRows = await db.all(allResult);
-    console.log(allRows);
-    let query = "INSERT INTO staff (name, age) VALUES (?, ?)";
-    console.log(query);
-    await db.run(query, [name, age]);
-    let allResult2 = "SELECT * FROM staff";
-    let allRows2 = await db.all(allResult2);
-    console.log(allRows2);
+    if (req.query.price !== undefined) {
+      query = req.query.price;
+      sqlQuery += " WHERE price = ?";
+    } else if (req.query.subject !== undefined) {
+      query = req.query.subject;
+      sqlQuery += " WHERE subject = ?";
+    } else if (req.query.author !== undefined) {
+      query = req.query.author;
+      sqlQuery += " WHERE author = ?";
+    } else if (req.query.isbn !== undefined) {
+      query = req.query.isbn;
+      sqlQuery += " WHERE isbn = ?";
+    } else {
+      sqlQuery += "";
+    }
+
+    const db = await getDBConnection();
+    let allProducts = await db.all(sqlQuery, query);
     await db.close();
-    res.type('text').send('success');
+    res.json(allProducts);
+
   } catch (err) {
-    console.log(err);
-    res.status(500);
-    res.type('text').send('something went wrong');
+    console.error(err);
+    res.status(SERVER_ERROR);
+    res.type('text').send('An error occurred on the server. Try again later.');
   }
 });
 
 /**
- * Establishes a database connection to the database and returns the database object.
- * Any errors that occur should be caught in the function that calls this one.
- * @returns {Object} - The database object for the connection.
- */
+* Establishes a database connection to the database and returns the database object.
+* Any errors that occur should be caught in the function that calls this one.
+* @returns {Object} - The database object for the connection.
+*/
 async function getDBConnection() {
   const db = await sqlite.open({
-    filename: 'cse154roster.db',
+    filename: 'tables.db',
     driver: sqlite3.Database
   });
   return db;
 }
 
 app.use(express.static('public'));
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || DEFAULT_PORT;
 app.listen(PORT);
