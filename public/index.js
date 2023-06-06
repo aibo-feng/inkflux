@@ -24,12 +24,13 @@
   window.addEventListener("load",init);
 
   /**
-   *
+   * Initializes majority of all the view changing functions along with the radio buttons
+   * that control viewing experience.
    */
   async function init() {
     await showAllProducts();
     id("search-btn").addEventListener("click", search)
-    id("cart").addEventListener("click", displayCart);
+    id("cart").addEventListener("click", handleCart);
     id("user-profile").addEventListener("click", function() {
       showPage("user");
     });
@@ -39,8 +40,12 @@
     id("back-btn").addEventListener("click", function() {
       showPage("search");
     });
-    id("check-out").addEventListener("click", buySelected);
-    id("check-out-all").addEventListener("click", buyAll);
+    id("check-out").addEventListener("click", activateConfirmation);
+    id("select-all").addEventListener("click", function() {
+      for(item of qsa(".checkout-product")) {
+        item.classList.add("selected");
+      }
+    });
     qs("#login button").addEventListener("click", login);
     qs("#signup button").addEventListener("click", signup);
 
@@ -55,14 +60,108 @@
     });
   }
 
-  async function displayCart() {
-    showPage("check-out");
+  /**
+   * Activates the confirmatory buttons once the user clicked the check out button
+   */
+  function activateConfirmation() {
+    id("confirm-purchase").classList.remove("hidden");
+    id("sure").addEventListener("click", buyItems);
+    id("not-sure").addEventListener("click", function() {
+      id("confirm-purchase").classList.add("hidden");
+    });
+    calculateAndUpdateTotalPrice();
+  }
 
+  /**
+   * Updates the total price of the purchase based on all the selected products that the
+   * user acutally wants to buy
+   */
+  function calculateAndUpdateTotalPrice() {
+    let itemArray = qsa(".selected");
+    let totalPrice = 0;
+    for(item of itemArray) {
+      let pTags = item.querySelectorAll("p");
+      let priceString = pTags[2];
+      let price = priceString.trim().split(":")[1];
+      totalPrice += price;
+    }
+    id("total").textContent = "Total Price: " + totalPrice;
+  }
+
+  /**
+   * Communicates with database in order to successfully purchase the selected items and
+   * handle all other behavior including the removal of the purchased items from the cart.
+   */
+  async function buyItems() {
+    id("confirm-purchase").classList.add("hidden");
+    let itemArray = qsa(".selected");
+    let ISBNArray = [];
+    for(item of itemArray) {
+      let pTags = item.querySelectorAll("p");
+      let ISBN = pTags[0];
+      ISBNArray.push(ISBN);
+    }
+
+    let data = new FormData();
+    data.append("ISBNs", ISBNArray);
     try {
-      let result = await fetch(CART + "")
+      let result = await fetch(PURCHASE, {method: "POST", body: data});
+      await statusCheck(result);
+      result = await result.text();
+      id("confirmation-number").textContent = "Your confirmation number for this purchase is: "
+       + result;
     } catch {
 
     }
+  }
+
+  /**
+   * Handles the behavioral changes when changing to the cart view
+   */
+  async function handleCart() {
+    showPage("check-out");
+    id("confirmation-number").innerHTML = "";
+    try {
+      let result = await fetch(CART + currUser);
+      await statusCheck(result);
+      result = await result.json();
+      displayCart(result.items);
+    } catch {
+
+    }
+  }
+
+  /**
+   * Displays all the items in the current users cart
+   * @param {Array} itemJsonArray Array of the json of the item or items in the users cart
+   */
+  function displayCart(itemJsonArray) {
+    for(item of itemJsonArray) {
+      let itemCard = gen("article");
+      itemCard.classList.add("checkout-product");
+      itemCard.id = item.isbn;
+
+      let itemISBN = getItemTextField("ISBN", item.isbn);
+      let itemName = getItemTextField("name", item.name);
+      let itemPrice = getItemTextField("price", item.price);
+
+      itemCard.appendChild(itemISBN);
+      itemCard.appendChild(itemName);
+      itemCard.appendChild(itemPrice);
+
+      itemCard.addEventListener("click", function() {
+        toggleSelected(this);
+      });
+      id("products").appendChild(itemCard);
+    }
+  }
+
+  /**
+   * Toggles the selected class/property of a specified item card
+   * @param {HTMLElement} card item card whose selected property will be toggled
+   */
+  function toggleSelected(card) {
+    card.classList.toggle("selected");
   }
 
   /**
