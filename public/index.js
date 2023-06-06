@@ -64,7 +64,6 @@
     });
   }
 
-
   /**
    * Handles changing DOM to show transaction history
    */
@@ -85,7 +84,7 @@
    * @param {Array} pastTransactions array of json of past transactions
    */
   function updateHistory(pastTransactions) {
-    for(const transaction of pastTransactions) {
+    for (const transaction of pastTransactions) {
       let transactionArticle = gen("article");
       transactionArticle.classList.add("purchase");
 
@@ -121,7 +120,7 @@
       let pTags = item.querySelectorAll("p");
       let priceString = pTags[2];
       let price = priceString.trim();
-      price = price.split(":")[1]
+      price = price.split(":")[1];
       totalPrice += price;
     }
     id("total").textContent = "Total Price: " + totalPrice;
@@ -255,7 +254,7 @@
       let res = await fetch(PRODUCTS);
       await statusCheck(res);
       let itemJSON = await res.json();
-      displayItems(itemJSON.items, false);
+      displayItems(itemJSON, false);
     } catch {
       //TODO: Error handling
     }
@@ -385,6 +384,7 @@
       itemImgName += "-" + itemImgNameArray[i].toLowerCase();
     }
     itemImgName += ".png";
+    itemImgName = itemImgName.replace(':', '');
     itemImg.src = itemImgName;
     itemImg.alt = itemImgName;
 
