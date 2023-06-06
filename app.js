@@ -10,6 +10,7 @@ const multer = require('multer');
 
 const SERVER_ERROR = 500;
 const BAD_REQUEST = 400;
+const OK = 200;
 
 const DEFAULT_PORT = 8000;
 
@@ -20,7 +21,7 @@ app.use(multer().none());
 app.get('/inkflux/products', async (req, res) => {
   try {
     let sqlQuery = "SELECT * FROM items";
-    let query = "";
+    let query;
 
     if (req.query.price !== undefined) {
       query = req.query.price;
@@ -39,7 +40,13 @@ app.get('/inkflux/products', async (req, res) => {
     }
 
     const db = await getDBConnection();
-    let allProducts = await db.all(sqlQuery, query);
+    let allProducts;
+    if (query !== undefined) {
+      allProducts = await db.all(sqlQuery, query);
+    } else {
+      allProducts = await db.all(sqlQuery);
+    }
+
     await db.close();
     res.json(allProducts);
 
@@ -49,6 +56,171 @@ app.get('/inkflux/products', async (req, res) => {
     res.type('text').send('An error occurred on the server. Try again later.');
   }
 });
+
+app.get('/inkflux/login/:username/:password', async (req, res) => {
+  try {
+    let username = req.params.username;
+    let password = req.params.password;
+
+    let userCheck = "SELECT * FROM users WHERE username = ?";
+    let loginQuery = "SELECT * FROM users WHERE username = ? AND password = ?";
+
+    const db = await getDBConnection();
+
+    let isUser = await db.all(userCheck, username);
+
+    if (isUser.length <= 0) {
+      await db.close();
+      res.status(BAD_REQUEST);
+      res.type('text').send('User does not exist.');
+    } else {
+      let user = await db.all(loginQuery, username, password);
+      await db.close();
+
+      if (user.length <= 0) {
+        res.status(BAD_REQUEST);
+        res.type('text').send('Password is incorrect.');
+      } else {
+        res.status(OK);
+        res.type('text').send('success');
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(SERVER_ERROR);
+    res.type('text').send('An error occurred on the server. Try again later.');
+  }
+});
+
+app.post('/inkflux/signup', async (req, res) => {
+  try {
+    let email = req.body.email;
+    let username = req.body.username;
+    let password = req.body.password;
+
+    let userCheck = "SELECT * FROM users WHERE username = ?";
+    let emailCheck = "SELECT * FROM users WHERE email = ?";
+    let insertQuery = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
+
+    const db = await getDBConnection();
+    let isUser = await db.all(userCheck, username);
+    let isEmail = await db.all(emailCheck, email);
+
+    if (isEmail.length > 0) {
+      await db.close();
+      res.status(BAD_REQUEST);
+      res.type('text').send('Email already exists.');
+    } else if (isUser.length > 0) {
+      await db.close();
+      res.status(BAD_REQUEST);
+      res.type('text').send('Username already exists.');
+    } else {
+      await db.run(insertQuery, email, username, password);
+      await db.close();
+      res.status(OK);
+      res.type('text').send('success');
+    }
+
+  } catch (err) {
+    console.error(err);
+    res.status(SERVER_ERROR);
+    res.type('text').send('An error occurred on the server. Try again later.');
+  }
+});
+
+app.get('/inkflux/getcart/:username', async (req, res) => {
+  try {
+    let username = req.params.username;
+    let userCheck = "SELECT * FROM users WHERE username = ?";
+    let cartQuery = "SELECT c.isbn, i.name, i.price " +
+      "FROM cart c, items i " +
+      "WHERE c.isbn = i.isbn AND username = ?";
+
+    const db = await getDBConnection();
+
+    let isUser = await db.all(userCheck, username);
+
+    if (isUser.length <= 0) {
+      await db.close();
+      res.status(BAD_REQUEST);
+      res.type('text').send('User does not exist.');
+    } else {
+      let cart = await db.all(cartQuery, username);
+      await db.close();
+      res.json(cart);
+    }
+
+  } catch (err) {
+    console.error(err);
+    res.status(SERVER_ERROR);
+    res.type('text').send('An error occurred on the server. Try again later.');
+  }
+});
+
+app.post('/inkflux/buy', async (req, res) => {
+  try {
+    let username = req.body.username;
+    let ISBNArray = req.body.ISBNArray;
+
+    if (ISBNArray.length <= 0) {
+      res.status(BAD_REQUEST);
+      res.type('text').send('No items in cart.');
+    } else {
+      const db = await getDBConnection();
+
+      let confirmationNumber = Math.floor(Math.random() * 1000000000);
+      let confirmationCheck = "SELECT * FROM transactions WHERE confirmation_number = ?";
+      while (db.all(confirmationCheck, confirmationNumber).length > 0) {
+        confirmationNumber = Math.floor(Math.random() * 1000000000);
+      }
+
+      let userCheck = "SELECT * FROM users WHERE username = ?";
+      let isUser = await db.all(userCheck, username);
+
+      if (isUser.length <= 0) {
+        await db.close();
+        res.status(BAD_REQUEST);
+        res.type('text').send('User does not exist.');
+      } else {
+        for (let i = 0; i < ISBNArray.length; i++) {
+          let isbn = ISBNArray[i];
+
+          let itemCheck = "SELECT * FROM items WHERE isbn = ?";
+          let isItem = await db.all(itemCheck, isbn);
+          if (isItem.length <= 0) {
+            await db.close();
+            res.status(BAD_REQUEST);
+            res.type('text').send('Item does not exist.');
+          } else {
+            let insertQuery = "INSERT INTO transactions (confirmation_number, isbn, username) " +
+              "VALUES (?, ?, ?)";
+            await db.run(insertQuery, username, isbn, username);
+            await db.run("DELETE FROM cart WHERE username = ?", username);
+            let updateQuery = "UPDATE items SET amount_in_stock = amount_in_stock - 1 " +
+              "WHERE isbn = ?";
+            await db.run(updateQuery, isbn);
+          }
+        }
+      }
+      await db.close();
+      res.status(OK);
+      res.type('text').send(confirmationNumber.toString());
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(SERVER_ERROR);
+    res.type('text').send('An error occurred on the server. Try again later.');
+  }
+});
+
+app.post('/inkflux/addcart/:username', async (req, res) => {
+});
+
+app.get('/inkflux/gethistory/:username', async (req, res) => {
+});
+
+
+
 
 /**
 * Establishes a database connection to the database and returns the database object.

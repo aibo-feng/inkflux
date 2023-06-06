@@ -21,7 +21,7 @@
   let CART = "/inkflux/getcart/";
   let PURCHASE = "/inkflux/buy"
 
-  window.addEventListener("load",init);
+  window.addEventListener("load", init);
 
   /**
    * Initializes majority of all the view changing functions along with the radio buttons
@@ -46,7 +46,7 @@
     });
     id("check-out").addEventListener("click", activateConfirmation);
     id("select-all").addEventListener("click", function() {
-      for(const item of qsa(".checkout-product")) {
+      for (const item of qsa(".checkout-product")) {
         item.classList.add("selected");
       }
     });
@@ -79,7 +79,7 @@
   function calculateAndUpdateTotalPrice() {
     let itemArray = qsa(".selected");
     let totalPrice = 0;
-    for(const item of itemArray) {
+    for (const item of itemArray) {
       let pTags = item.querySelectorAll("p");
       let priceString = pTags[2];
       let price = priceString.trim();
@@ -97,20 +97,21 @@
     id("confirm-purchase").classList.add("hidden");
     let itemArray = qsa(".selected");
     let ISBNArray = [];
-    for(const item of itemArray) {
+    for (const item of itemArray) {
       let pTags = item.querySelectorAll("p");
       let ISBN = pTags[0];
       ISBNArray.push(ISBN);
     }
 
     let data = new FormData();
+    data.append("username", currUser);
     data.append("ISBNs", ISBNArray);
     try {
       let result = await fetch(PURCHASE, {method: "POST", body: data});
       await statusCheck(result);
       result = await result.text();
       id("confirmation-number").textContent = "Your confirmation number for this purchase is: "
-       + result;
+        + result;
     } catch {
 
     }
@@ -137,7 +138,7 @@
    * @param {Array} itemJsonArray Array of the json of the item or items in the users cart
    */
   function displayCart(itemJsonArray) {
-    for(const item of itemJsonArray) {
+    for (const item of itemJsonArray) {
       let itemCard = gen("article");
       itemCard.classList.add("checkout-product");
       itemCard.id = item.isbn;
@@ -228,7 +229,7 @@
    * @param {boolean} isSpecific whether or not we need more specific data
    */
   function displayItems(itemArray, isSpecific) {
-    for(const itemJson of itemArray) {
+    for (const itemJson of itemArray) {
       let itemCard = gen("article");
       if (isSpecific) {
       } else {
@@ -271,7 +272,7 @@
     itemCard.appendChild(itemSubject);
     itemCard.appendChild(itemPrice);
 
-    if(isSpecific) {
+    if (isSpecific) {
       let itemPages = getItemTextField("Pages", itemJson.pages);
       let itemISBN = getItemTextField("ISBN", itemJson.isbn);
       let itemDescription = getItemTextField("Description", itemJson.description);
@@ -352,7 +353,7 @@
    */
   function showLoginOrSignUp() {
     let loginType = this.value;
-    if(loginType !== prevLoginSignUp) {
+    if (loginType !== prevLoginSignUp) {
       id("resultmsg").innerHTML = "";
       id(loginType).classList.remove("hidden");
       id(prevLoginSignUp).classList.add("hidden");
@@ -365,9 +366,9 @@
    */
   function changeProductView() {
     let view = this.value;
-    if(view !== prevViewOption) {
+    if (view !== prevViewOption) {
       let productArray = qsa(".main-item");
-      for(const item of productArray) {
+      for (const item of productArray) {
         item.classList.remove(prevViewOption);
         item.classList.add(view);
       }
@@ -389,8 +390,8 @@
    * Displays the specified page for the user and hides the previous page
    */
   function showPage(page) {
-    if(page !== prevPage) {
-      if(page === "user") {
+    if (page !== prevPage) {
+      if (page === "user") {
         id("resultmsg").innerHTML = "";
       }
       id(page).classList.remove("hidden");
