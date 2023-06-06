@@ -19,7 +19,9 @@
   let LOGIN = "/inkflux/login";
   let SIGNUP = "/inkflux/signup";
   let CART = "/inkflux/getcart/";
-  let PURCHASE = "/inkflux/buy"
+  let ADDCART = "/inkflux/addcart";
+  let PURCHASE = "/inkflux/buy";
+  let GETTRANSACTIONS = "/inkflux/gethistory";
 
   window.addEventListener("load", init);
 
@@ -34,9 +36,7 @@
     id("user-profile").addEventListener("click", function() {
       showPage("user");
     });
-    id("transaction-history").addEventListener("click", function() {
-      showPage("history");
-    })
+    id("transaction-history").addEventListener("click", handleHistory);
     id("back-btn").addEventListener("click", function() {
       showPage("search");
     });
@@ -62,6 +62,44 @@
     viewRadioArray.forEach(function(button) {
       button.addEventListener("change", changeProductView);
     });
+  }
+
+
+  /**
+   * Handles changing DOM to show transaction history
+   */
+  async function handleHistory() {
+    try {
+      let result = await fetch(GETTRANSACTIONS + currUser);
+      await statusCheck(result);
+      result = await result.json();
+      showPage("history");
+      updateHistory(result.history);
+    } catch {
+
+    }
+  }
+
+  /**
+   * Parses the array of past transactions and displays it in the history container
+   * @param {Array} pastTransactions array of json of past transactions
+   */
+  function updateHistory(pastTransactions) {
+    for(const transaction of pastTransactions) {
+      let transactionArticle = gen("article");
+      transactionArticle.classList.add("purchase");
+
+      let confirmID = gen("p");
+      confirmID.textContent = "Confirmation ID: " + transaction.confirmation_number;
+
+      let isbn = gen("p");
+      isbn.textContent = "ISBN Number: " + transaction.isbn;
+
+      transactionArticle.appendChild(confirmID);
+      transactionArticle.appendChild(isbn);
+
+      id("history").appendChild(transactionArticle);
+    }
   }
 
   /**
@@ -241,6 +279,7 @@
         let addCardButton = gen("button");
         addCardButton.id = "add-cart";
         addCardButton.textContent = "Add to Cart";
+        addCardButton.addEventListener("click", addToCart);
         id("specific-display").appendChild(itemCard);
         id("specific-display").appendChild(addCardButton);
       } else {
@@ -249,6 +288,23 @@
         });
         id("item-display").appendChild(itemCard);
       }
+    }
+  }
+
+
+  /**
+   * Adds a product to the users cart
+   */
+  async function addToCart() {
+    try {
+      let data = new FormData();
+      data.append("isbn", this.parentElement.id);
+      data.append("username", currUser);
+
+      let response = await fetch(ADDCART, {method: "POST", body: data});
+      await statusCheck(response);
+    } catch {
+
     }
   }
 
@@ -382,7 +438,10 @@
   async function search() {
     showPage("search");
     let item = id("search-bar").textContent;
+    let field = qs("select").value;
+    let result = await fetch(PRODUCTS + "?")
 
+    displayItems();
     //Will pull from the database to display the items
   }
 
