@@ -11,26 +11,43 @@ information about the products that can be bought
 
 **Description:** Return a list of all of the products that you can look up in this API.
 
-**Example Request:** /all-products
+**Example Request:** /inkflux/products
 
 **Example Response:**
 ```json
-{
-  "lawnmower": {
-    "name": "Lawn Mower",
-    "price": "100.00",
-    "img": "https://m.media-amazon.com/images/I/71cTi4JENtS._AC_SX466_.jpg",
-    "colors": ["blue", "green", "red"]
+[
+  {
+    "name": "Calculus: Early Transcendentals",
+    "subject": "math",
+    "pages": 881,
+    "isbn": "978-1-234567-89-0",
+    "description": "A comprehensive calculus textbook covering topics like limits, derivatives, and integrals.",
+    "author": "James Stewart",
+    "price": 90,
+    "amount_in_stock": 69
   },
-  "waterbottle": {
-    "name": "Takeya Water Bottle",
-    "price": "40.00",
-    "img": "https://m.media-amazon.com/images/I/61bfY72BI5L._AC_SX522_.jpg",
-    "colors": ["blue", "green", "red"],
-    "sizes": ["40oz", "30oz", "20oz"]
-  }
-}
-...
+  {
+    "name": "Linear Algebra and Its Applications",
+    "subject": "math",
+    "pages": 613,
+    "isbn": "978-2-345678-90-1",
+    "description": "This textbook explores the fundamentals of linear algebra, including matrices, vector spaces, and linear transformations.",
+    "author": "David C. Lay",
+    "price": 75,
+    "amount_in_stock": 35
+  },
+  {
+    "name": "Discrete Mathematics and Its Applications",
+    "subject": "math",
+    "pages": 573,
+    "isbn": "978-3-456789-01-2",
+    "description": "An introduction to discrete mathematics, covering topics such as logic, sets, combinatorics, and graph theory.",
+    "author": "Kenneth H. Rosen",
+    "price": 60,
+    "amount_in_stock": 85
+  },
+  ...
+]
 ```
 
 **Error Handling:**

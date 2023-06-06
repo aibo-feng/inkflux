@@ -1,0 +1,17 @@
+{
+  "name": "fp-partner-aibo-ay1132",
+  "version": "1.0.0",
+  "description": "The API for inkflux, a textbook selling website",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aibo Feng, Alexander Yuan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite": "^4.2.1",
+    "sqlite3": "^5.1.6"
+  }
+}
