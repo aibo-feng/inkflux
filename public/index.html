@@ -17,138 +17,49 @@
     <script src="index.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital@1&display=swap"
     rel="stylesheet">
-    <title>AYAF & Company: Internet Goods</title>
+    <title>Inkflux: Buy Amazing Textbooks</title>
   </head>
   <body>
-    <header>
-      <nav>
-        <ul id="nav_elements">
-          <li id="logo">
-            <img src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
-            <h1>Inkflux: Buy Amazing Textbooks</h1>
-          </li>
-          <li>
-            <span>Search By: </span>
-            <select>
-              <option value="name">Name</option>
-              <option value="author">Author</option>
-              <option value="subject">Subject</option>
-            </select>
-            <input id="search-bar" type="text" placeholder="Search...">
-            <button id="search-btn">Search</button>
-          </li>
-          <li id="cart">
-            <img src="img/shopping-cart.png"
-            alt="Photo of shopping cart">
-            <p>Cart</p>
-          </li>
-          <li id="transaction-history">
-            <p>Transaction History</p>
-          </li>
-          <li id="user-profile">
-            <p>Log In/Sign Up</p>
-          </li>
-        </ul>
-      <nav>
-      <button id="back-btn">Back to Search</button>
-    </header>
-
-    <section id="search">
-      <section id="filters">
-        <span>Filters: </span>
-        <span value="subject=math">Subject = Math</span>
-        <span value="subject=science">Subject = Science </span>
-        <span value="subject=history">Subject = History</span>
-        <span value="price>100">Price > 100</span>
-        <span value="price>80">Price > 80</span>
-        <span value="price>60">Price > 60</span>
-        <span>Name</span>
-      </section>
-
-      <article id="view-options">
-        <span>Item View Format: </span>
-        <label><input value="cozy" type="radio" name="view" checked="checked">Cozy</label>
-        <label><input value="compact" type="radio" name="view">Compact</label>
-      </article>
-
-      <section id="item-display">
-      </section>
-    </section>
-
-    <section id="specific-display" class="hidden">
-    </section>
-
-    <section id="check-out" class="hidden">
-      <section id="products">
-        <article class="checkout-product">
-          <p>ISBN</p>
-          <p>SampleProduct</p>
-          <p>10</p>
-        </article>
-      </section>
-
-      <article id="total">
-        <p>Total Price: 0</p>
-      </article>
-
-      <button id="check-out">Purchase selected items</button>
-      <button id="select-all">Select All Items</button>
-
-      <article id="
-      " class="hidden">
-        <p>Please confirm your purchase</p>
-        <button id="sure">Yes</button>
-        <button id="not-sure">No</button>
-      </article>
-
-      <p id="confirmation-number"></p>
-    </section>
-
-    <section id="history" class="hidden">
-      <h1>Transaction History</h1>
-    </section>
-
-    <section id="user" class="hidden">
-      <article id="options">
-        <label><input value="login" type="radio" name="login" checked="checked">Log In</label>
-        <label><input value="signup" type="radio" name="login">Sign up</label>
-      </article>
-
-      <section id="login">
-        <p>Username: </p>
-        <input id="login-username" type="text"></textarea>
-        <p>Password: </p>
-        <input id="login-password" type="password"></textarea>
-        <p id="login-error" class="hidden">It seems either your username or password were incorrect,
-          please try again</p>
-
-        <label class="switch">
-          <input type="checkbox">
-          <span class="slider round"></span>
-        </label>
-
-        <button>Log in</button>
-      </section>
-
-      <section id="signup" class="hidden">
-        <p>Email: </p>
-        <input id="signup-email" type="text"></textarea>
-        <p>Username: </p>
-        <input id="signup-username" type="text"></textarea>
-        <p>Password: </p>
-        <input id="signup-password" type="password"></textarea>
-        <p>Reconfirm Password: </p>
-        <input id="confirm-password" type="password"></textarea>
-
-        <label class="switch">
-          <input type="checkbox">
-          <span class="slider round"></span>
-        </label>
-
-        <button>Sign up</button>
-      </section>
-
-      <p id="resultmsg"></p>
-    </section>
+    <div class="header">
+      <div class="left-content">
+        <div id="logo">
+          <img id="mainlogo" src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
+        </div>
+        <div id="title">Inkflux: Buy Amazing Textbooks</div>
+        <div id="search">
+          <div>Search By: </div>
+          <select id="search-option">
+            <option value="name">Name</option>
+            <option value="author">Author</option>
+            <option value="subject">Subject</option>
+          </select>
+          <input id="search-bar" type="text" placeholder="Search...">
+          <button id="search-btn">Search</button>
+        </div>
+      </div>
+      <div class="right-content">
+        <div id="login">log in</div>
+        <div id="signup">sign up</div>
+        <div id="transaction history">Transaction History</div>
+        <div id="cart">
+          <img src="img/shopping-cart.png" alt="shopping cart">
+          <p>Cart</p>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div id="sidebar">
+        <div>Filters: </div>
+        <div>Subject = Math</div>
+        <div>Subject = Science </div>
+        <div>Subject = History</div>
+        <div>Price > 100</div>
+        <div>Price > 80</div>
+        <div>Price > 60</div>
+        <div>Name</div>
+      </div>
+      <div id="item-display">
+      </div>
+    </div>
   </body>
 </html>

@@ -22,21 +22,40 @@ app.get('/inkflux/products', async (req, res) => {
   try {
     let sqlQuery = "SELECT * FROM items";
     let query;
+    let prevQuery = false;
 
-    if (req.query.price !== undefined) {
-      query = req.query.price;
-      sqlQuery += " WHERE price = ?";
-    } else if (req.query.subject !== undefined) {
-      query = req.query.subject;
-      sqlQuery += " WHERE subject = ?";
-    } else if (req.query.author !== undefined) {
-      query = req.query.author;
-      sqlQuery += " WHERE author = ?";
-    } else if (req.query.isbn !== undefined) {
-      query = req.query.isbn;
-      sqlQuery += " WHERE isbn = ?";
-    } else {
-      sqlQuery += "";
+    if (req.query.name) {
+      query = "%" + req.query.name + "%";
+      sqlQuery += " WHERE name LIKE ?";
+      prevQuery = true;
+    }
+
+    if (req.query.price) {
+      sqlQuery += prevQuery ? " AND " : " WHERE ";
+      query = "%" + req.query.price + "%";
+      sqlQuery += "price LIKE ?";
+      prevQuery = true;
+    }
+
+    if (req.query.subject) {
+      sqlQuery += prevQuery ? " AND " : " WHERE ";
+      query = req.query.subject.toLowerCase();
+      sqlQuery += "subject = ?";
+      prevQuery = true;
+    }
+
+    if (req.query.author) {
+      sqlQuery += prevQuery ? " AND " : " WHERE ";
+      query = "%" + req.query.author + "%";
+      sqlQuery += "author LIKE ?";
+      prevQuery = true;
+    }
+
+    if (req.query.isbn) {
+      sqlQuery += prevQuery ? " AND " : " WHERE ";
+      query = "%" + req.query.isbn + "%";
+      sqlQuery += "isbn LIKE ?";
+      prevQuery = true;
     }
 
     const db = await getDBConnection();
