@@ -38,8 +38,8 @@
         </div>
       </div>
       <div class="right-content">
-        <div id="login">log in</div>
-        <div id="signup">sign up</div>
+        <button id="login-btn">log in</button>
+        <button id="signup">sign up</button>
         <div id="transaction history">Transaction History</div>
         <div id="cart">
           <img src="img/shopping-cart.png" alt="shopping cart">
@@ -61,5 +61,24 @@
       <div id="item-display">
       </div>
     </div>
+    <dialog class="login-modal">
+      <div id="login-container">
+        <div id="login-heading">
+          <div>Login</div >
+          <button type="button" id="close-login">&times;</button>
+        </div>
+        <form id="login-form" method="dialog">
+          <label>
+            Username:
+            <input type="text" name="username" placeholder="Username">
+          </label>
+          <label>
+            Password:
+            <input type="password" name="password" placeholder="Password">
+          </label>
+          <button id="submit-login">Login</button>
+        </form>
+      </div>
+    </dialog>
   </body>
 </html>

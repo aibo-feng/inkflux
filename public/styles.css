@@ -27,6 +27,7 @@ body {
 }
 
 .left-content {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -41,6 +42,10 @@ body {
 #search {
   flex: 1;
   display: flex;
+}
+
+#search-bar {
+  flex: 1;
 }
 
 .right-content {
@@ -112,4 +117,42 @@ body {
 .item-price {
   font-size: 15px;
   font-weight: bold;
+}
+
+.login-modal {
+  padding: 25px;
+}
+
+.login-modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#login-heading {
+  font-size: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#close-login {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+#login-form {
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 30px;
 }

@@ -76,10 +76,10 @@ app.get('/inkflux/products', async (req, res) => {
   }
 });
 
-app.get('/inkflux/login/:username/:password', async (req, res) => {
+app.get('/inkflux/login', async (req, res) => {
   try {
-    let username = req.params.username;
-    let password = req.params.password;
+    let username = req.body.username;
+    let password = req.body.password;
 
     let userCheck = "SELECT * FROM users WHERE username = ?";
     let loginQuery = "SELECT * FROM users WHERE username = ? AND password = ?";

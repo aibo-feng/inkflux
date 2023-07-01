@@ -31,7 +31,23 @@
    */
   async function init() {
     await showAllProducts();
+    initializeHeaderButtons();
+  }
+
+  function initializeHeaderButtons() {
     id("search-btn").addEventListener("click", searchProduct);
+
+    const loginModal = qs(".login-modal");
+    const loginBtn = id("login-btn");
+    const loginClose = id("close-login");
+
+    loginBtn.addEventListener("click", () => {
+      loginModal.showModal();
+    });
+
+    loginClose.addEventListener("click", () => {
+      loginModal.close();
+    });
   }
 
   /**
@@ -135,6 +151,13 @@
     displayItems(itemJSON);
   }
 
+  async function login() {
+    try {
+      let res = await fetch(LOGIN, {method: "POST", body: data});
+    } catch {
+
+    }
+  }
 
   /**
    * Helper function to return the response's result text if successful, otherwise
