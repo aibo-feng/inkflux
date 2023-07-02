@@ -15,6 +15,7 @@
   let prevLoginSignUp = "login";
   let prevViewOption = "cozy";
   let currUser = "";
+  let currSearchLink = "";
   let PRODUCTS = "/inkflux/products";
   let LOGIN = "/inkflux/login";
   let SIGNUP = "/inkflux/signup";
@@ -36,10 +37,25 @@
 
   function initializeHeaderButtons() {
     id("search-btn").addEventListener("click", searchProduct);
+    id("search-btn").addEventListener("click", filterReset);
+    initializeLoginModal();
+    initializeSignUpModal();
+    initializeFilterOptions();
+  }
 
-    const loginModal = qs(".login-modal");
+  function initializeFilterOptions() {
+    let updateFilters = id("filter-update");
+    updateFilters.addEventListener("click", filterSearch);
+
+    let resetFilters = id("filter-reset");
+    resetFilters.addEventListener("click", filterReset);
+  }
+
+  function initializeLoginModal() {
+    const loginModal = qs(".login.modal");
     const loginBtn = id("login-btn");
-    const loginClose = id("close-login");
+    const loginClose = qs(".login.modal-close");
+    const submitLogin = qs(".login.modal-submit");
 
     loginBtn.addEventListener("click", () => {
       loginModal.showModal();
@@ -47,6 +63,29 @@
 
     loginClose.addEventListener("click", () => {
       loginModal.close();
+    });
+
+    submitLogin.addEventListener("click", () => {
+      login();
+    });
+  }
+
+  function initializeSignUpModal() {
+    const signUpModal = qs(".signup.modal");
+    const signUpBtn = id("signup-btn");
+    const signUpClose = qs(".signup.modal-close");
+    const submitSignUp = qs(".signup.modal-submit");
+
+    signUpBtn.addEventListener("click", () => {
+      signUpModal.showModal();
+    });
+
+    signUpClose.addEventListener("click", () => {
+      signUpModal.close();
+    });
+
+    submitSignUp.addEventListener("click", () => {
+      signup();
     });
   }
 
@@ -59,7 +98,8 @@
       await statusCheck(res);
       let itemJSON = await res.json();
       displayItems(itemJSON);
-    } catch {
+    } catch (err) {
+      console.error(err);
       //TODO: Error handling
     }
   }
@@ -128,7 +168,8 @@
       await statusCheck(res);
       let itemJSON = await res.json();
       displayItems(itemJSON);
-    } catch {
+    } catch (err) {
+      console.error(err);
       //TODO: Error handling
     }
   }
@@ -137,7 +178,8 @@
     try {
       let query = id("search-bar").value;
       let option = id("search-option").value.toLowerCase();
-      let res = await fetch(PRODUCTS + "/?" + option + "=" + query);
+      currSearchLink = PRODUCTS + "/?" + option + "=" + query;
+      let res = await fetch(currSearchLink);
       await statusCheck(res);
       let itemJSON = await res.json();
       createSearch(itemJSON);
@@ -148,15 +190,71 @@
 
   function createSearch(itemJSON) {
     id("item-display").innerHTML = "";
-    displayItems(itemJSON);
+    if (itemJSON.length === 0) {
+      let noResults = gen("p");
+      noResults.textContent = "No results found";
+      id("item-display").appendChild(noResults);
+    } else {
+      displayItems(itemJSON);
+    }
   }
 
   async function login() {
     try {
+      let form = qs(".login.modal-form");
+      let data = new FormData(form);
       let res = await fetch(LOGIN, {method: "POST", body: data});
+      await statusCheck(res);
+      let username = await res.text();
     } catch {
-
+      // TODO: Error handling
     }
+  }
+
+  async function signup() {
+    try {
+      let form = qs(".signup.modal-form");
+      let data = new FormData(form);
+      let res = await fetch(SIGNUP, {method: "POST", body: data});
+      await statusCheck(res);
+      let username = await res.text();
+
+      // edit this part
+      currUser = username;
+      let newP = gen("p");
+      newP.textContent = "Welcome, " + username + "!";
+      id("login-container").appendChild(newP);
+    } catch {
+      // TODO: Error handling
+    }
+  }
+
+  async function filterSearch() {
+    try {
+      let filterLink = currSearchLink ? currSearchLink : PRODUCTS + "/?";
+      let precedingQuery = currSearchLink ? "&" : "";
+
+      for (const filter of qsa(".filter input")) {
+        if (filter.checked) {
+          filterLink += precedingQuery + filter.name + "=" + filter.value;
+          precedingQuery = "&";
+          let res = await fetch(filterLink);
+          await statusCheck(res);
+          let itemJSON = await res.json();
+          createSearch(itemJSON);
+        }
+      }
+    } catch (err) {
+      // TODO: Error handling
+      console.error(err);
+    }
+  }
+
+  function filterReset() {
+    for (const filter of qsa(".filter input")) {
+      filter.checked = false;
+    }
+    searchProduct();
   }
 
   /**

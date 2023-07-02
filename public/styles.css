@@ -13,12 +13,12 @@ body {
   flex-direction: column;
   min-height: 100vh;
   margin: 0;
-  background-color: #e5ddd1;
   font-size: 30px;
 }
 
 .header {
-  background-color: #e5caa1;
+  background-color: white;
+  color: #448CAA;
   display: flex;
   height: 100px;
   justify-content: space-between;
@@ -35,8 +35,9 @@ body {
 
 #logo > img {
   width: 100px;
-  height: 100px;
-  margin: 0;
+  height: auto;
+  margin: 20px;
+  flex-shrink: 0;
 }
 
 #search {
@@ -44,8 +45,35 @@ body {
   display: flex;
 }
 
+#search-option {
+  border: 3px solid #448CAA;
+  border-right: none;
+  height: 50px;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+  font-size: 20px;
+}
+
 #search-bar {
+  border: 3px solid #448CAA;
+  border-right: none;
+  padding: 5px;
+  height: 34px;
+  outline: none;
+  font-size: 20px;
   flex: 1;
+}
+
+#search-btn {
+  width: 100px;
+  height: 50px;
+  border: 1px solid #448CAA;
+  background: #448CAA;
+  text-align: center;
+  color: #fff;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  font-size: 20px;
 }
 
 .right-content {
@@ -67,20 +95,24 @@ body {
 }
 
 .content {
-  background-color: aquamarine;
+  /* background-color: #44465B; */
+  background-color: #95C8D9;
   display: flex;
   flex: 1;
   gap: 30px;
+  padding: 20px;
 }
 
 #sidebar {
-  background-color: aliceblue;
+  background-color: #448CAA;
+  color: white;
   font-size: 20px;
   width: 200px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  border-radius: 25px;
 }
 
 #item-display {
@@ -91,18 +123,24 @@ body {
 
 .item {
   font-size: 20px;
-  max-width: 200px;
+  max-width: 250px;
+  max-height: 610px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 25px;
+  box-shadow: 0 10px 6px -6px #777;
 }
 
 .item-img {
-  width: 200px;
-  height: 300px;
+  width: 250px;
+  height: 330px;
 }
 
 .item-name{
   margin: 0;
   font-size: 20px;
   font-weight: bold;
+  min-height: 75px;
 }
 
 .item-author {
@@ -112,6 +150,7 @@ body {
 
 .item-description {
   font-size: 15px;
+  min-height: 75px;
 }
 
 .item-price {
@@ -119,28 +158,22 @@ body {
   font-weight: bold;
 }
 
-.login-modal {
+.modal {
   padding: 25px;
 }
 
-.login-modal::backdrop {
+.modal::backdrop {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.login-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-#login-heading {
+.modal-heading {
   font-size: 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-#close-login {
+.modal-close {
   cursor: pointer;
   border: none;
   outline: none;
@@ -149,10 +182,16 @@ body {
   font-weight: bold;
 }
 
-#login-form {
+.modal-form {
   font-size: 15px;
   display: flex;
   flex-direction: column;
   gap: 30px;
   padding: 30px;
+}
+
+.modal-form > label {
+  display: flex;
+  justify-content: space-between;
+  min-width: 275px;
 }

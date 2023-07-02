@@ -21,39 +21,50 @@ app.use(multer().none());
 app.get('/inkflux/products', async (req, res) => {
   try {
     let sqlQuery = "SELECT * FROM items";
-    let query;
+    let query = [];
     let prevQuery = false;
 
     if (req.query.name) {
-      query = "%" + req.query.name + "%";
+      query.push("%" + req.query.name + "%");
       sqlQuery += " WHERE name LIKE ?";
       prevQuery = true;
     }
 
     if (req.query.price) {
       sqlQuery += prevQuery ? " AND " : " WHERE ";
-      query = "%" + req.query.price + "%";
-      sqlQuery += "price LIKE ?";
+      query.push(req.query.price);
+      sqlQuery += "price < ?";
       prevQuery = true;
     }
 
     if (req.query.subject) {
       sqlQuery += prevQuery ? " AND " : " WHERE ";
-      query = req.query.subject.toLowerCase();
-      sqlQuery += "subject = ?";
+      let subjectParams = req.query.subject;
+
+      if (Array.isArray(subjectParams) && subjectParams.length > 1) {
+        sqlQuery += "(";
+        let notFirst = false;
+        for (const subject of subjectParams) {
+          sqlQuery = addSubjectQuery(subject, sqlQuery, query, notFirst);
+          notFirst = true;
+        }
+        sqlQuery += ")";
+      } else {
+        sqlQuery = addSubjectQuery(subjectParams, sqlQuery, query, false);
+      }
       prevQuery = true;
     }
 
     if (req.query.author) {
       sqlQuery += prevQuery ? " AND " : " WHERE ";
-      query = "%" + req.query.author + "%";
+      query.push("%" + req.query.author + "%");
       sqlQuery += "author LIKE ?";
       prevQuery = true;
     }
 
     if (req.query.isbn) {
       sqlQuery += prevQuery ? " AND " : " WHERE ";
-      query = "%" + req.query.isbn + "%";
+      query.push("%" + req.query.isbn + "%");
       sqlQuery += "isbn LIKE ?";
       prevQuery = true;
     }
@@ -76,7 +87,16 @@ app.get('/inkflux/products', async (req, res) => {
   }
 });
 
-app.get('/inkflux/login', async (req, res) => {
+function addSubjectQuery(subject, queryStatement, queryArray, notFirst) {
+  if (notFirst) {
+    queryStatement += " OR ";
+  }
+  queryStatement += "subject = ?";
+  queryArray.push(subject.toLowerCase());
+  return queryStatement;
+}
+
+app.post('/inkflux/login', async (req, res) => {
   try {
     let username = req.body.username;
     let password = req.body.password;
@@ -101,7 +121,7 @@ app.get('/inkflux/login', async (req, res) => {
         res.type('text').send('Password is incorrect.');
       } else {
         res.status(OK);
-        res.type('text').send('success');
+        res.type('text').send(username);
       }
     }
   } catch (err) {
@@ -117,27 +137,34 @@ app.post('/inkflux/signup', async (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
 
-    let userCheck = "SELECT * FROM users WHERE username = ?";
-    let emailCheck = "SELECT * FROM users WHERE email = ?";
-    let insertQuery = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
-
-    const db = await getDBConnection();
-    let isUser = await db.all(userCheck, username);
-    let isEmail = await db.all(emailCheck, email);
-
-    if (isEmail.length > 0) {
-      await db.close();
+    if (!email || !username || !password) {
       res.status(BAD_REQUEST);
-      res.type('text').send('Email already exists.');
-    } else if (isUser.length > 0) {
-      await db.close();
-      res.status(BAD_REQUEST);
-      res.type('text').send('Username already exists.');
+      res.type('text').send('Missing required fields.');
+
     } else {
-      await db.run(insertQuery, email, username, password);
-      await db.close();
-      res.status(OK);
-      res.type('text').send('success');
+
+      let userCheck = "SELECT * FROM users WHERE username = ?";
+      let emailCheck = "SELECT * FROM users WHERE email = ?";
+      let insertQuery = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
+
+      const db = await getDBConnection();
+      let isUser = await db.all(userCheck, username);
+      let isEmail = await db.all(emailCheck, email);
+
+      if (isEmail.length > 0) {
+        await db.close();
+        res.status(BAD_REQUEST);
+        res.type('text').send('Email already exists.');
+      } else if (isUser.length > 0) {
+        await db.close();
+        res.status(BAD_REQUEST);
+        res.type('text').send('Username already exists.');
+      } else {
+        await db.run(insertQuery, email, username, password);
+        await db.close();
+        res.status(OK);
+        res.type('text').send('success');
+      }
     }
 
   } catch (err) {
@@ -145,6 +172,7 @@ app.post('/inkflux/signup', async (req, res) => {
     res.status(SERVER_ERROR);
     res.type('text').send('An error occurred on the server. Try again later.');
   }
+
 });
 
 app.get('/inkflux/getcart/:username', async (req, res) => {

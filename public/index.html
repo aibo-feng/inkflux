@@ -1,14 +1,4 @@
 <!DOCTYPE html>
-<!--
-  Name: Alexander Yuan
-  Date: 3/31/2023
-  Section: AF (Donovan & Sonia)
-
-  This file contains the HTML for a protytpe pokedex. It contains the UI to search for pokemon.
-  It also contains a display section where the pokemon are displayed. It also contains a section
-  to display more in-depth stats of a pokemon. Finally it contains an error message in case
-  an error appears.
-  -->
 
 <html lang="en">
   <head>
@@ -23,23 +13,21 @@
     <div class="header">
       <div class="left-content">
         <div id="logo">
-          <img id="mainlogo" src="https://media.tenor.com/UZJd1pjj4NMAAAAC/surprised-pikachu.gif">
+          <img id="mainlogo" src="img/inkflux-logo.png">
         </div>
-        <div id="title">Inkflux: Buy Amazing Textbooks</div>
         <div id="search">
-          <div>Search By: </div>
           <select id="search-option">
             <option value="name">Name</option>
             <option value="author">Author</option>
             <option value="subject">Subject</option>
           </select>
-          <input id="search-bar" type="text" placeholder="Search...">
+          <input id="search-bar" type="text" placeholder="Search for a textbook...">
           <button id="search-btn">Search</button>
         </div>
       </div>
       <div class="right-content">
         <button id="login-btn">log in</button>
-        <button id="signup">sign up</button>
+        <button id="signup-btn">sign up</button>
         <div id="transaction history">Transaction History</div>
         <div id="cart">
           <img src="img/shopping-cart.png" alt="shopping cart">
@@ -49,34 +37,78 @@
     </div>
     <div class="content">
       <div id="sidebar">
-        <div>Filters: </div>
-        <div>Subject = Math</div>
-        <div>Subject = Science </div>
-        <div>Subject = History</div>
-        <div>Price > 100</div>
-        <div>Price > 80</div>
-        <div>Price > 60</div>
-        <div>Name</div>
+        <h1>Filters</h1>
+        <button id="filter-update">Update Filters</button>
+        <button id="filter-reset">Reset Filters</button>
+        <h2>Subject</h2>
+        <div class="filter">
+          <label for="math-filter">Math</label>
+          <input id="math-filter" name="subject" value="math" type="checkbox">
+        </div>
+        <div class="filter">
+          <label for="science-filter">Science</label>
+          <input id="science-filter" name="subject" value="science" type="checkbox">
+        </div>
+        <div class="filter">
+          <label for="history-filter">History</label>
+          <input id="history-filter" name="subject" value="history" type="checkbox">
+        </div>
+        <h2>Price</h2>
+        <div class="filter">
+          <label for="price-100-filter">Under $100</label>
+          <input id="price-100-filter" name="price" value="100" type="radio">
+        </div>
+        <div class="filter">
+          <label for="price-80-filter">Under $80</label>
+          <input id="price-80-filter" name="price" value="80" type="radio">
+        </div>
+        <div class="filter">
+          <label for="price-60-filter">Under $60</label>
+          <input id="price-60-filter" name="price" value="60" type="radio">
+        </div>
       </div>
       <div id="item-display">
       </div>
     </div>
-    <dialog class="login-modal">
+    <dialog class="login modal">
       <div id="login-container">
-        <div id="login-heading">
+        <div class="login modal-heading">
           <div>Login</div >
-          <button type="button" id="close-login">&times;</button>
+          <button type="button" class="login modal-close">&times;</button>
         </div>
-        <form id="login-form" method="dialog">
-          <label>
+        <form class="login modal-form" method="dialog">
+          <label class="modal-username">
             Username:
             <input type="text" name="username" placeholder="Username">
           </label>
-          <label>
+          <label class="modal-password">
             Password:
             <input type="password" name="password" placeholder="Password">
           </label>
-          <button id="submit-login">Login</button>
+          <button class="login modal-submit">Login</button>
+        </form>
+      </div>
+    </dialog>
+    <dialog class="signup modal">
+      <div id="signup-container">
+        <div class="signup modal-heading">
+          <div>Sign Up</div >
+          <button type="button" class="signup modal-close">&times;</button>
+        </div>
+        <form class="signup modal-form" method="dialog">
+          <label class="modal-email">
+            Email:
+            <input type="email" name="email" placeholder="Email">
+          </label>
+          <label class="modal-username">
+            Username:
+            <input type="text" name="username" placeholder="Username">
+          </label>
+          <label class="modal-password">
+            Password:
+            <input type="password" name="password" placeholder="Password">
+          </label>
+          <button class="signup modal-submit">Sign Up</button>
         </form>
       </div>
     </dialog>
