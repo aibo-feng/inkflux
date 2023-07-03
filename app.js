@@ -96,6 +96,8 @@ function addSubjectQuery(subject, queryStatement, queryArray, notFirst) {
   return queryStatement;
 }
 
+/*
+
 app.post('/inkflux/login', async (req, res) => {
   try {
     let username = req.body.username;
@@ -130,6 +132,10 @@ app.post('/inkflux/login', async (req, res) => {
     res.type('text').send('An error occurred on the server. Try again later.');
   }
 });
+
+*/
+
+
 
 app.post('/inkflux/signup', async (req, res) => {
   try {
