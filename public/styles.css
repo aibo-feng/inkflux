@@ -14,6 +14,7 @@ body {
   min-height: 100vh;
   margin: 0;
   font-size: 30px;
+  font-family: 'Roboto', sans-serif;
 }
 
 .header {
@@ -34,7 +35,7 @@ body {
 }
 
 #logo > img {
-  width: 100px;
+  width: 150px;
   height: auto;
   margin: 20px;
   flex-shrink: 0;
@@ -82,6 +83,42 @@ body {
   gap: 20px;
 }
 
+#login-btn {
+  width: 100px;
+  height: 50px;
+  border: 2px solid #448CAA;
+  background: #448CAA;
+  text-align: center;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: background-color 0.5s ease;
+}
+
+#login-btn:hover {
+  background-color: #fff;
+  color: #448CAA;
+}
+
+#signup-btn {
+  width: 100px;
+  height: 50px;
+  border: 2px solid #95C8D9;
+  background: #fff;
+  text-align: center;
+  color: #95C8D9;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: background-color 0.5s ease;
+}
+
+#signup-btn:hover {
+  background-color: #95C8D9;
+  color: #fff;
+}
+
 #cart {
   display: flex;
   align-items: center;
@@ -113,6 +150,11 @@ body {
   flex-direction: column;
   flex-shrink: 0;
   border-radius: 25px;
+  transition: margin 0.3s ease-in-out;
+}
+
+#sidebar:hover {
+  margin-top: -10px;
 }
 
 #item-display {
@@ -150,7 +192,7 @@ body {
 
 .item-description {
   font-size: 15px;
-  min-height: 75px;
+  min-height: 100px;
 }
 
 .item-price {
@@ -159,18 +201,24 @@ body {
 }
 
 .modal {
-  padding: 25px;
+  width: 300px;
+  padding: 40px;
+  background-color: whitesmoke;
+  border-radius: 20px;
+  border: none;
 }
 
 .modal::backdrop {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .modal-heading {
   font-size: 30px;
+  font-weight: bold;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 30px;
 }
 
 .modal-close {
@@ -183,15 +231,35 @@ body {
 }
 
 .modal-form {
-  font-size: 15px;
+  font-size: 17px;
   display: flex;
   flex-direction: column;
   gap: 30px;
-  padding: 30px;
+  padding-bottom: 10px;
 }
 
 .modal-form > label {
   display: flex;
-  justify-content: space-between;
-  min-width: 275px;
+  flex-direction: column;
+}
+
+.modal-form input {
+  height: 30px;
+  border: 2px solid #f0f0f0;
+  border-radius: 5px;
+  outline: none;
+  padding: 5px;
+  font-size: 15px;
+}
+
+.modal-submit {
+  width: 100%;
+  height: 50px;
+  border: none;
+  background-color: #448CAA;
+  text-align: center;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 20px;
 }
