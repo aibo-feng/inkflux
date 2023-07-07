@@ -7,6 +7,12 @@ const sqlite = require('sqlite');
 const sqlite3 = require('sqlite3');
 
 const multer = require('multer');
+const crypto = require('crypto');
+
+const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
+
+require('dotenv').config();
 
 const SERVER_ERROR = 500;
 const BAD_REQUEST = 400;
@@ -17,6 +23,23 @@ const DEFAULT_PORT = 8000;
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(multer().none());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: new SQLiteStore({
+      db: 'sessions.db',
+      tableName: 'sessions',
+    }),
+    cookie: {
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+    },
+  })
+);
 
 app.get('/inkflux/products', async (req, res) => {
   try {
@@ -96,36 +119,43 @@ function addSubjectQuery(subject, queryStatement, queryArray, notFirst) {
   return queryStatement;
 }
 
-/*
-
 app.post('/inkflux/login', async (req, res) => {
   try {
     let username = req.body.username;
     let password = req.body.password;
 
     let userCheck = "SELECT * FROM users WHERE username = ?";
-    let loginQuery = "SELECT * FROM users WHERE username = ? AND password = ?";
 
     const db = await getDBConnection();
 
-    let isUser = await db.all(userCheck, username);
+    let user = await db.get(userCheck, username);
 
-    if (isUser.length <= 0) {
+    if (user) {
+      const hashedPassword = hashPassword(password, user.salt);
+
+      if (hashedPassword === user.password) {
+
+        req.session.uuid = user.uuid;
+        req.session.username = user.username;
+        req.session.save((err) => {
+          if (err) {
+            console.error('Error saving session:', err);
+            res.status(SERVER_ERROR).send('An error occurred while saving the session.');
+          } else {
+            res.redirect('/inkflux/account');
+          }
+        });
+      } else {
+        res.status(BAD_REQUEST);
+        res.type('text').send('Invalid username or password');
+      }
+
+    } else {
       await db.close();
       res.status(BAD_REQUEST);
       res.type('text').send('User does not exist.');
-    } else {
-      let user = await db.all(loginQuery, username, password);
-      await db.close();
-
-      if (user.length <= 0) {
-        res.status(BAD_REQUEST);
-        res.type('text').send('Password is incorrect.');
-      } else {
-        res.status(OK);
-        res.type('text').send(username);
-      }
     }
+
   } catch (err) {
     console.error(err);
     res.status(SERVER_ERROR);
@@ -133,15 +163,11 @@ app.post('/inkflux/login', async (req, res) => {
   }
 });
 
-*/
-
-
-
 app.post('/inkflux/signup', async (req, res) => {
   try {
-    let email = req.body.email;
-    let username = req.body.username;
-    let password = req.body.password;
+    const email = req.body.email;
+    const username = req.body.username;
+    const password = req.body.password;
 
     if (!email || !username || !password) {
       res.status(BAD_REQUEST);
@@ -151,25 +177,38 @@ app.post('/inkflux/signup', async (req, res) => {
 
       let userCheck = "SELECT * FROM users WHERE username = ?";
       let emailCheck = "SELECT * FROM users WHERE email = ?";
-      let insertQuery = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
 
       const db = await getDBConnection();
-      let isUser = await db.all(userCheck, username);
-      let isEmail = await db.all(emailCheck, email);
+      let userExists = await db.get(userCheck, username);
+      let emailExists = await db.get(emailCheck, email);
 
-      if (isEmail.length > 0) {
+      if (emailExists) {
         await db.close();
         res.status(BAD_REQUEST);
         res.type('text').send('Email already exists.');
-      } else if (isUser.length > 0) {
+
+      } else if (userExists) {
         await db.close();
         res.status(BAD_REQUEST);
         res.type('text').send('Username already exists.');
+
       } else {
-        await db.run(insertQuery, email, username, password);
+
+        const salt = crypto.randomBytes(16).toString('hex');
+        const hashedPassword = hashPassword(password, salt);
+
+        let uuid = crypto.randomUUID();
+        let checkUUID = "SELECT * FROM users WHERE uuid = ?";
+        while (await db.get(checkUUID, uuid)) {
+          uuid = crypto.randomUUID();
+        }
+
+        let insertQuery = "INSERT INTO users (uuid, email, username, password, salt) VALUES (?, ?, ?, ?, ?)";
+        await db.run(insertQuery, uuid, email, username, hashedPassword, salt);
         await db.close();
+
         res.status(OK);
-        res.type('text').send('success');
+        res.type('text').send(username);
       }
     }
 
@@ -178,7 +217,49 @@ app.post('/inkflux/signup', async (req, res) => {
     res.status(SERVER_ERROR);
     res.type('text').send('An error occurred on the server. Try again later.');
   }
+});
 
+// Function to hash the password with the salt
+function hashPassword(password, salt) {
+  const hashedPassword = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha256').toString('hex');
+  return hashedPassword;
+}
+
+app.get('/inkflux/account', async (req, res) => {
+  try {
+    if (req.session.uuid) {
+      const uuid = req.session.uuid;
+      const username = req.session.username;
+
+      const getCartInfo = "SELECT * FROM cart WHERE username = ?";
+      const getTransactionInfo = "SELECT * FROM transactions WHERE username = ?";
+
+      const db = await getDBConnection();
+
+      const cartInfo = await db.all(getCartInfo, username);
+      const transactionInfo = await db.all(getTransactionInfo, username);
+
+      await db.close();
+
+      const infoJson = {
+        uuid: uuid,
+        username: username,
+        cart: cartInfo,
+        transactions: transactionInfo
+      };
+
+      res.status(OK);
+      res.json(infoJson);
+
+    } else {
+      res.status(BAD_REQUEST);
+      res.type('text').send('User is not logged in.');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(SERVER_ERROR);
+    res.type('text').send('An error occurred on the server. Try again later.');
+  }
 });
 
 app.get('/inkflux/getcart/:username', async (req, res) => {
@@ -237,7 +318,6 @@ app.post('/inkflux/buy', async (req, res) => {
       } else {
         for (let i = 0; i < ISBNArray.length; i++) {
           let isbn = ISBNArray[i];
-
           let itemCheck = "SELECT * FROM items WHERE isbn = ?";
           let isItem = await db.all(itemCheck, isbn);
           if (isItem.length <= 0) {

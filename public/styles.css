@@ -131,7 +131,7 @@ body {
   margin: 0;
 }
 
-.content {
+#content {
   /* background-color: #44465B; */
   background-color: #95C8D9;
   display: flex;
@@ -262,4 +262,8 @@ body {
   border-radius: 5px;
   cursor: pointer;
   font-size: 20px;
+}
+
+.hidden {
+  display: none !important;
 }

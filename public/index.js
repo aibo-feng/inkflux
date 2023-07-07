@@ -16,13 +16,14 @@
   let prevViewOption = "cozy";
   let currUser = "";
   let currSearchLink = "";
-  let PRODUCTS = "/inkflux/products";
-  let LOGIN = "/inkflux/login";
-  let SIGNUP = "/inkflux/signup";
-  let CART = "/inkflux/getcart/";
-  let ADDCART = "/inkflux/addcart";
-  let PURCHASE = "/inkflux/buy";
-  let GETTRANSACTIONS = "/inkflux/gethistory";
+  const PRODUCTS = "/inkflux/products";
+  const LOGIN = "/inkflux/login";
+  const SIGNUP = "/inkflux/signup";
+  const ACCOUNT = "/inkflux/account";
+  const CART = "/inkflux/getcart/";
+  const ADDCART = "/inkflux/addcart";
+  const PURCHASE = "/inkflux/buy";
+  const GETTRANSACTIONS = "/inkflux/gethistory";
 
   window.addEventListener("load", init);
 
@@ -199,13 +200,30 @@
     }
   }
 
+  async function checkLogin() {
+    try {
+      let res = await fetch(ACCOUNT);
+      await statusCheck(res);
+      let userInfo = await res.json();
+      return userInfo;
+    } catch {
+      // TODO: Error handling
+    }
+  }
+
   async function login() {
     try {
-      let form = qs(".login.modal-form");
-      let data = new FormData(form);
-      let res = await fetch(LOGIN, {method: "POST", body: data});
-      await statusCheck(res);
-      let username = await res.text();
+      let info = await checkLogin();
+      if (info) {
+        loadAccount(info);
+      } else {
+        let form = qs(".login.modal-form");
+        let data = new FormData(form);
+        let res = await fetch(LOGIN, {method: "POST", body: data});
+        await statusCheck(res);
+        let userInfo = await res.json();
+        loadAccount(userInfo);
+      }
     } catch {
       // TODO: Error handling
     }
@@ -218,15 +236,17 @@
       let res = await fetch(SIGNUP, {method: "POST", body: data});
       await statusCheck(res);
       let username = await res.text();
-
-      // edit this part
-      currUser = username;
-      let newP = gen("p");
-      newP.textContent = "Welcome, " + username + "!";
-      id("login-container").appendChild(newP);
     } catch {
       // TODO: Error handling
     }
+  }
+
+  function loadAccount(userInfo) {
+    id("login-btn").classList.add("hidden");
+    id("signup-btn").classList.add("hidden");
+    id("content").classList.add("hidden");
+    id("account").classList.remove("hidden");
+    // id("account-btn").classList.remove("hidden");
   }
 
   async function filterSearch() {
