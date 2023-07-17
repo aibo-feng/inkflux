@@ -2,17 +2,20 @@
 
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="styles.css" />
     <script src="index.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
     <title>Inkflux: Buy Amazing Textbooks</title>
   </head>
   <body>
     <div class="header">
       <div class="left-content">
         <div id="logo">
-          <img id="mainlogo" src="img/inkflux-logo.png">
+          <img id="mainlogo" src="img/inkflux-logo.png" />
         </div>
         <div id="search">
           <select id="search-option">
@@ -20,21 +23,34 @@
             <option value="author">Author</option>
             <option value="subject">Subject</option>
           </select>
-          <input id="search-bar" type="text" placeholder="Search for a textbook...">
+          <input
+            id="search-bar"
+            type="text"
+            placeholder="Search for a textbook..."
+          />
           <button id="search-btn">Search</button>
         </div>
       </div>
       <div class="right-content">
+        <button id="cart-btn">
+          <div id="cart-img-container">
+            <img
+              src="img/shopping-cart.png"
+              alt="Shopping Cart"
+              id="cart-img"
+            />
+            <img
+              src="img/shopping-cart-hover.png"
+              alt="Shopping Cart Hover"
+              id="cart-img-hover"
+            />
+          </div>
+        </button>
         <button id="login-btn">log in</button>
         <button id="signup-btn">sign up</button>
-        <div id="transaction history">Transaction History</div>
-        <div id="cart">
-          <img src="img/shopping-cart.png" alt="shopping cart">
-          <p>Cart</p>
-        </div>
       </div>
     </div>
-    <div id="content">
+    <div id="content" class="view">
       <div id="sidebar">
         <h1>Filters</h1>
         <button id="filter-update">Update Filters</button>
@@ -42,47 +58,91 @@
         <h2>Subject</h2>
         <div class="filter">
           <label for="math-filter">Math</label>
-          <input id="math-filter" name="subject" value="math" type="checkbox">
+          <input id="math-filter" name="subject" value="math" type="checkbox" />
         </div>
         <div class="filter">
           <label for="science-filter">Science</label>
-          <input id="science-filter" name="subject" value="science" type="checkbox">
+          <input
+            id="science-filter"
+            name="subject"
+            value="science"
+            type="checkbox"
+          />
         </div>
         <div class="filter">
           <label for="history-filter">History</label>
-          <input id="history-filter" name="subject" value="history" type="checkbox">
+          <input
+            id="history-filter"
+            name="subject"
+            value="history"
+            type="checkbox"
+          />
         </div>
         <h2>Price</h2>
         <div class="filter">
           <label for="price-100-filter">Under $100</label>
-          <input id="price-100-filter" name="price" value="100" type="radio">
+          <input id="price-100-filter" name="price" value="100" type="radio" />
         </div>
         <div class="filter">
           <label for="price-80-filter">Under $80</label>
-          <input id="price-80-filter" name="price" value="80" type="radio">
+          <input id="price-80-filter" name="price" value="80" type="radio" />
         </div>
         <div class="filter">
           <label for="price-60-filter">Under $60</label>
-          <input id="price-60-filter" name="price" value="60" type="radio">
+          <input id="price-60-filter" name="price" value="60" type="radio" />
         </div>
       </div>
-      <div id="item-display">
+      <div id="item-display"></div>
+    </div>
+    <div id="cart-interface" class="hidden view">
+      <div id="cart-header">
+        <div id="cart-title">Shopping Cart</div>
+      </div>
+      <div id="cart-items"></div>
+    </div>
+    <div id="page-footer">
+      <div id="footer-content">
+        <div id="footer-left">
+          <div id="footer-logo">
+            <img src="img/inkflux-footer.png" alt="Inkflux Logo" />
+          </div>
+          <div id="footer-text">
+            Inkflux is a website that allows you to buy and sell textbooks
+            online.
+          </div>
+        </div>
+        <div id="footer-right">
+          <div id="footer-links">
+            <div class="footer-link">
+              <a href="google.com">About Us</a>
+            </div>
+            <div class="footer-link">
+              <a href="google.com">Contact Us</a>
+            </div>
+            <div class="footer-link">
+              <a href="google.com">Privacy Policy</a>
+            </div>
+            <div class="footer-link">
+              <a href="google.com">Terms of Service</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <dialog class="login modal">
       <div id="login-container">
         <div class="login modal-heading">
-          <div>Login</div >
+          <div>Login</div>
           <button type="button" class="login modal-close">&times;</button>
         </div>
         <form class="login modal-form" method="dialog">
           <label class="modal-username">
             Username
-            <input type="text" name="username">
+            <input type="text" name="username" />
           </label>
           <label class="modal-password">
             Password
-            <input type="password" name="password">
+            <input type="password" name="password" />
           </label>
           <button class="login modal-submit">Login</button>
         </form>
@@ -91,28 +151,28 @@
     <dialog class="signup modal">
       <div id="signup-container">
         <div class="signup modal-heading">
-          <div>Sign Up</div >
+          <div>Sign Up</div>
           <button type="button" class="signup modal-close">&times;</button>
         </div>
         <form class="signup modal-form" method="dialog">
           <label class="modal-email">
             Email
-            <input type="email" name="email">
+            <input type="email" name="email" />
           </label>
           <label class="modal-username">
             Username
-            <input type="text" name="username">
+            <input type="text" name="username" />
           </label>
           <label class="modal-password">
             Password
-            <input type="password" name="password">
+            <input type="password" name="password" />
           </label>
           <button class="signup modal-submit">Sign Up</button>
         </form>
       </div>
     </dialog>
     <div id="account" class="hidden">
-      <div class="welcome"> Welcome! </div>
+      <div class="welcome">Welcome!</div>
     </div>
   </body>
 </html>

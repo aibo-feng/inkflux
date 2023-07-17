@@ -19,6 +19,7 @@
   const PRODUCTS = "/inkflux/products";
   const LOGIN = "/inkflux/login";
   const SIGNUP = "/inkflux/signup";
+  const LOGOUT = "/inkflux/logout";
   const ACCOUNT = "/inkflux/account";
   const CART = "/inkflux/getcart/";
   const ADDCART = "/inkflux/addcart";
@@ -33,15 +34,47 @@
    */
   async function init() {
     await showAllProducts();
-    initializeHeaderButtons();
+    await initializeHeaderButtons();
+    let userInfo = await checkLogin();
+    if (userInfo) {
+      loadAccount(userInfo);
+    }
   }
 
-  function initializeHeaderButtons() {
+  async function initializeHeaderButtons() {
     id("search-btn").addEventListener("click", searchProduct);
     id("search-btn").addEventListener("click", filterReset);
+    initializeCartButton();
     initializeLoginModal();
     initializeSignUpModal();
     initializeFilterOptions();
+    await initializeHomeButton();
+  }
+
+  async function initializeHomeButton() {
+    id("mainlogo").addEventListener("click", async () => {
+      switchView("content");
+      await showAllProducts();
+    });
+  }
+
+  function initializeCartButton() {
+    id("cart-btn").addEventListener("click", async () => {
+      switchView("cart-interface");
+    });
+  }
+
+  function switchView(newView) {
+    id("item-display").innerHTML = "";
+    id("search-bar").value = "";
+
+    let allViews = qsa(".view");
+    for (const view of allViews) {
+      view.classList.add("hidden");
+      if (view.id === newView) {
+        view.classList.remove("hidden");
+      }
+    }
   }
 
   function initializeFilterOptions() {
@@ -111,7 +144,7 @@
       itemDiv.classList.add("item");
       itemDiv.id = item.isbn;
 
-      let img = getItemImage(item);
+      let img = getItemImage(item.name);
       img.classList.add("item-img");
 
       let author = gen("p");
@@ -122,19 +155,38 @@
       name.textContent = item.name;
       name.classList.add("item-name");
 
+      let description = gen("p");
+      description.textContent = item.description;
+      description.classList.add("item-description");
+
+      let bottomDiv = gen("div");
+      bottomDiv.classList.add("item-bottom");
+
       let price = gen("p");
       price.textContent = "$" + item.price;
       price.classList.add("item-price");
 
-      let description = gen("p");
-      description.textContent = item.description;
-      description.classList.add("item-description");
+      let addToCart = gen("button");
+      addToCart.classList.add("item-add-to-cart");
+
+      let cartIcon = gen("img");
+      cartIcon.src = "img/add-to-cart.png";
+      cartIcon.classList.add("item-add-to-cart-icon");
+
+      addToCart.appendChild(cartIcon);
+
+      addToCart.addEventListener("click", () => {
+        addToCartClicked(item.isbn);
+      });
+
+      bottomDiv.appendChild(price);
+      bottomDiv.appendChild(addToCart);
 
       itemDiv.appendChild(img);
       itemDiv.appendChild(name);
       itemDiv.appendChild(author);
       itemDiv.appendChild(description);
-      itemDiv.appendChild(price);
+      itemDiv.appendChild(bottomDiv);
 
       id("item-display").appendChild(itemDiv);
     }
@@ -145,9 +197,9 @@
    * @param {JSON} itemJson json of the item
    * @returns {HTMLElement} image element of item
    */
-  function getItemImage(itemJson) {
+  function getItemImage(itemName) {
     let itemImg = gen("img");
-    let itemImgNameArray = itemJson.name.split(" ");
+    let itemImgNameArray = itemName.split(" ");
     let itemImgName = "img/" + itemImgNameArray[0].toLowerCase();
     for (let i = 1; i < itemImgNameArray.length; i++) {
       itemImgName += "-" + itemImgNameArray[i].toLowerCase();
@@ -200,55 +252,6 @@
     }
   }
 
-  async function checkLogin() {
-    try {
-      let res = await fetch(ACCOUNT);
-      await statusCheck(res);
-      let userInfo = await res.json();
-      return userInfo;
-    } catch {
-      // TODO: Error handling
-    }
-  }
-
-  async function login() {
-    try {
-      let info = await checkLogin();
-      if (info) {
-        loadAccount(info);
-      } else {
-        let form = qs(".login.modal-form");
-        let data = new FormData(form);
-        let res = await fetch(LOGIN, {method: "POST", body: data});
-        await statusCheck(res);
-        let userInfo = await res.json();
-        loadAccount(userInfo);
-      }
-    } catch {
-      // TODO: Error handling
-    }
-  }
-
-  async function signup() {
-    try {
-      let form = qs(".signup.modal-form");
-      let data = new FormData(form);
-      let res = await fetch(SIGNUP, {method: "POST", body: data});
-      await statusCheck(res);
-      let username = await res.text();
-    } catch {
-      // TODO: Error handling
-    }
-  }
-
-  function loadAccount(userInfo) {
-    id("login-btn").classList.add("hidden");
-    id("signup-btn").classList.add("hidden");
-    id("content").classList.add("hidden");
-    id("account").classList.remove("hidden");
-    // id("account-btn").classList.remove("hidden");
-  }
-
   async function filterSearch() {
     try {
       let filterLink = currSearchLink ? currSearchLink : PRODUCTS + "/?";
@@ -275,6 +278,189 @@
       filter.checked = false;
     }
     searchProduct();
+  }
+
+  function showCart(cartJson) {
+    if (cartJson.length === 0) {
+      let noItems = gen("p");
+      noItems.textContent = "No items in cart. Add some!";
+      id("cart-items").appendChild(noItems);
+
+    } else {
+      let totalPrice = 0.0;
+      for (const cartItem of cartJson) {
+        totalPrice += cartItem.price;
+        initCart(cartItem);
+      }
+
+      let cartFooter = gen("div");
+      cartFooter.id = "cart-footer";
+
+      let cartTotal = gen("div");
+      cartTotal.id = "cart-total";
+
+      let cartTotalText = gen("div");
+      cartTotalText.textContent = "Sub-total:"
+
+      let cartTotalPrice = gen("div");
+      cartTotalPrice.id = "cart-total-price";
+      cartTotalPrice.textContent = "$" + totalPrice.toFixed(2);
+
+      cartTotal.appendChild(cartTotalText);
+      cartTotal.appendChild(cartTotalPrice);
+
+      let checkoutButton = gen("button");
+      checkoutButton.id = "checkout-button";
+      checkoutButton.textContent = "Checkout";
+
+      cartFooter.appendChild(cartTotal);
+      cartFooter.appendChild(checkoutButton);
+
+      id("cart-interface").appendChild(cartFooter);
+    }
+  }
+
+  function initCart(cartItem) {
+    let cartDisplay = id("cart-items");
+
+    let itemDiv = gen("div");
+    itemDiv.classList.add("cart-item");
+
+    let itemImg = getItemImage(cartItem.name);
+
+    let itemTitle = gen("p");
+    itemTitle.textContent = cartItem.name;
+
+    let itemPrice = gen("p");
+    itemPrice.textContent = "$" + cartItem.price;
+
+    itemDiv.appendChild(itemImg);
+    itemDiv.appendChild(itemTitle);
+    itemDiv.appendChild(itemPrice);
+
+    cartDisplay.appendChild(itemDiv);
+  }
+
+  async function checkLogin() {
+    try {
+      let res = await fetch(ACCOUNT);
+      await statusCheck(res);
+      let userInfo = await res.json();
+      return userInfo;
+    } catch {
+      // TODO: Error handling
+    }
+  }
+
+  async function login() {
+    try {
+      let info = await checkLogin();
+      if (info) {
+        loadAccount(info);
+      } else {
+        let form = qs(".login.modal-form");
+        let data = new FormData(form);
+        let res = await fetch(LOGIN, {method: "POST", body: data});
+        await statusCheck(res);
+        let info = await res.json();
+        loadAccount(info);
+      }
+    } catch {
+      // TODO: Error handling
+    }
+  }
+
+  async function logout() {
+    try {
+      let res = await fetch(LOGOUT);
+      await statusCheck(res);
+      location.reload();
+    } catch {
+      // TODO: Error handling
+    }
+  }
+
+  async function signup() {
+    try {
+      let form = qs(".signup.modal-form");
+      let data = new FormData(form);
+      let res = await fetch(SIGNUP, {method: "POST", body: data});
+      await statusCheck(res);
+      let username = await res.text();
+    } catch {
+      // TODO: Error handling
+    }
+  }
+
+  function loadAccount(userInfo) {
+    let loginButton = id("login-btn");
+    loginButton.classList.add("hidden");
+    // loginButton.removeEventListener("click");
+
+    let signupButton = id("signup-btn");
+    signupButton.classList.add("hidden");
+    // signupButton.removeEventListener("click");
+
+    createAccountDropdown(userInfo.username);
+    initializeAccountDropdown();
+    showCart(userInfo.cart);
+    // id("account-btn").textContent = userInfo.username;
+  }
+
+  function createAccountDropdown(username) {
+    let dropdown = gen("div");
+    dropdown.classList.add("account-dropdown");
+
+    let usernameText = gen("p");
+    usernameText.id = "dropdown-username";
+    usernameText.textContent = username;
+
+    let accountButton = gen("button");
+    accountButton.id = "account-btn";
+    accountButton.textContent = "My Account";
+
+    let dropdownMenu = gen("div");
+    dropdownMenu.classList.add("dropdown-menu");
+
+    let transactionHistoryButton = gen("button");
+    transactionHistoryButton.id = "transaction-history";
+    transactionHistoryButton.textContent = "Transaction History";
+
+    let logoutButton = gen("button");
+    logoutButton.id = "logout";
+    logoutButton.textContent = "Logout";
+    logoutButton.addEventListener("click", async () => {
+      await logout();
+    });
+
+    dropdownMenu.appendChild(usernameText);
+
+    dropdownMenu.appendChild(transactionHistoryButton);
+    dropdownMenu.appendChild(logoutButton);
+
+    dropdown.appendChild(accountButton);
+    dropdown.appendChild(dropdownMenu);
+
+    qs(".right-content").appendChild(dropdown);
+  }
+
+  function initializeAccountDropdown() {
+    document.addEventListener("click", e => {
+      const isAccountDropdown = e.target.matches("#account-btn");
+      // if target of click is dropdown menu, don't do anything to dropdown
+      if (!isAccountDropdown && e.target.closest(".account-dropdown")) {
+        return;
+      }
+      // if target of click is account button, toggle dropdown
+      if (isAccountDropdown) {
+        qs(".account-dropdown").classList.toggle("active");
+      // if target of click is not account button, nor dropdown menu, close dropdown
+      } else {
+        if (qs(".account-dropdown.active")) {
+          qs(".account-dropdown.active").classList.remove("active");
+        }
+      }
+    });
   }
 
   /**

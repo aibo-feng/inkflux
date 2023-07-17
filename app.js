@@ -231,18 +231,17 @@ app.get('/inkflux/account', async (req, res) => {
       const uuid = req.session.uuid;
       const username = req.session.username;
 
-      const getCartInfo = "SELECT * FROM cart WHERE username = ?";
-      const getTransactionInfo = "SELECT * FROM transactions WHERE username = ?";
+      const getCartInfo = "SELECT * FROM cart c, items i WHERE c.isbn = i.isbn AND c.uuid = ?";
+      const getTransactionInfo = "SELECT * FROM transactions WHERE uuid = ?";
 
       const db = await getDBConnection();
 
-      const cartInfo = await db.all(getCartInfo, username);
-      const transactionInfo = await db.all(getTransactionInfo, username);
+      const cartInfo = await db.all(getCartInfo, uuid);
+      const transactionInfo = await db.all(getTransactionInfo, uuid);
 
       await db.close();
 
       const infoJson = {
-        uuid: uuid,
         username: username,
         cart: cartInfo,
         transactions: transactionInfo
@@ -252,8 +251,8 @@ app.get('/inkflux/account', async (req, res) => {
       res.json(infoJson);
 
     } else {
-      res.status(BAD_REQUEST);
-      res.type('text').send('User is not logged in.');
+      res.status(OK);
+      res.json(null);
     }
   } catch (err) {
     console.error(err);
@@ -262,7 +261,20 @@ app.get('/inkflux/account', async (req, res) => {
   }
 });
 
-app.get('/inkflux/getcart/:username', async (req, res) => {
+app.get('/inkflux/logout', (req, res) => {
+  // Clear the session data
+  req.session.destroy((err) => {
+    if (err) {
+      res.status(SERVER_ERROR)
+      res.type('text').send('An error occurred while logging out.');
+    } else {
+      res.status(OK);
+      res.type('text').send('Logged out successfully.');
+    }
+  });
+});
+
+app.get('/inkflux/getcart/', async (req, res) => {
   try {
     let username = req.params.username;
     let userCheck = "SELECT * FROM users WHERE username = ?";
