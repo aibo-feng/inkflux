@@ -11,11 +11,13 @@
 "use strict";
 
 (function() {
+  let test = "hihihi"
   let prevPage = "search";
   let prevLoginSignUp = "login";
   let prevViewOption = "cozy";
-  let currUser = "";
+  let isLoggedIn = false;
   let currSearchLink = "";
+  let currUserInfo = {};
   const PRODUCTS = "/inkflux/products";
   const LOGIN = "/inkflux/login";
   const SIGNUP = "/inkflux/signup";
@@ -60,6 +62,9 @@
 
   function initializeCartButton() {
     id("cart-btn").addEventListener("click", async () => {
+      if (isLoggedIn) {
+        showCart(currUserInfo.cart);
+      }
       switchView("cart-interface");
     });
   }
@@ -167,6 +172,7 @@
       price.classList.add("item-price");
 
       let addToCart = gen("button");
+      initAddToCartButton(addToCart, item.isbn);
       addToCart.classList.add("item-add-to-cart");
 
       let cartIcon = gen("img");
@@ -174,10 +180,6 @@
       cartIcon.classList.add("item-add-to-cart-icon");
 
       addToCart.appendChild(cartIcon);
-
-      addToCart.addEventListener("click", () => {
-        addToCartClicked(item.isbn);
-      });
 
       bottomDiv.appendChild(price);
       bottomDiv.appendChild(addToCart);
@@ -191,6 +193,28 @@
       id("item-display").appendChild(itemDiv);
     }
   }
+
+  async function initAddToCartButton(button, isbn) {
+    button.addEventListener("click", async () => {
+      if (isLoggedIn) {
+        await addToCart(isbn);
+        await checkLogin();
+      }
+    });
+  }
+
+  async function addToCart(isbn) {
+    try {
+      let data = new FormData();
+      data.append("isbn", isbn);
+      let res = await fetch(ADDCART, {method: "POST", body: data});
+      await statusCheck(res);
+    } catch (err) {
+      // TODO: Error handling
+      console.error(err);
+    }
+  }
+
 
   /**
    * Returns an image element containing an image of the item whose json is passed in
@@ -281,6 +305,8 @@
   }
 
   function showCart(cartJson) {
+    id("cart-items").innerHTML = "";
+
     if (cartJson.length === 0) {
       let noItems = gen("p");
       noItems.textContent = "No items in cart. Add some!";
@@ -289,8 +315,12 @@
     } else {
       let totalPrice = 0.0;
       for (const cartItem of cartJson) {
-        totalPrice += cartItem.price;
+        totalPrice += (cartItem.price * cartItem.quantity);
         initCart(cartItem);
+      }
+
+      if (id("cart-footer")) {
+        id("cart-footer").remove();
       }
 
       let cartFooter = gen("div");
@@ -326,17 +356,28 @@
     let itemDiv = gen("div");
     itemDiv.classList.add("cart-item");
 
+    let removeButton = gen("button");
+    removeButton.classList.add("cart-item-remove");
+    removeButton.textContent = "-";
+
     let itemImg = getItemImage(cartItem.name);
 
     let itemTitle = gen("p");
     itemTitle.textContent = cartItem.name;
+    itemTitle.classList.add("cart-item-title");
 
     let itemPrice = gen("p");
     itemPrice.textContent = "$" + cartItem.price;
 
+    let itemQuantity = gen("p");
+    itemQuantity.textContent = "x" + cartItem.quantity;
+    itemQuantity.classList.add("cart-item-quantity");
+
+    itemDiv.appendChild(removeButton);
     itemDiv.appendChild(itemImg);
     itemDiv.appendChild(itemTitle);
     itemDiv.appendChild(itemPrice);
+    itemDiv.appendChild(itemQuantity);
 
     cartDisplay.appendChild(itemDiv);
   }
@@ -346,6 +387,8 @@
       let res = await fetch(ACCOUNT);
       await statusCheck(res);
       let userInfo = await res.json();
+      isLoggedIn = true;
+      currUserInfo = userInfo;
       return userInfo;
     } catch {
       // TODO: Error handling
@@ -374,6 +417,7 @@
     try {
       let res = await fetch(LOGOUT);
       await statusCheck(res);
+      isLoggedIn = false;
       location.reload();
     } catch {
       // TODO: Error handling

@@ -360,33 +360,31 @@ app.post('/inkflux/buy', async (req, res) => {
 
 app.post('/inkflux/addcart/', async (req, res) => {
   try {
-    let username = req.body.username;
+    let uuid = req.session.uuid;
     let isbn = req.body.isbn.toString();
 
     const db = await getDBConnection();
 
-    let userCheck = "SELECT * FROM users WHERE username = ?";
     let itemCheck = "SELECT * FROM items WHERE isbn = ?";
-    let cartCheck = "SELECT * FROM cart WHERE username = ? AND isbn = ?";
-    let isUser = await db.all(userCheck, username);
-    let isItem = await db.all(itemCheck, isbn);
-    let isCart = await db.all(cartCheck, username, isbn);
+    let cartCheck = "SELECT * FROM cart WHERE uuid = ? AND isbn = ?";
 
-    if (isUser.length <= 0) {
-      await db.close();
-      res.status(BAD_REQUEST);
-      res.type('text').send('User does not exist.');
-    } else if (isItem.length <= 0) {
+    let isItem = await db.all(itemCheck, isbn);
+    let isCart = await db.all(cartCheck, uuid, isbn);
+
+    if (isItem.length <= 0) {
       await db.close();
       res.status(BAD_REQUEST);
       res.type('text').send('Item does not exist.');
     } else if (isCart.length > 0) {
+      let updateQuery = "UPDATE cart SET quantity = quantity + 1 WHERE uuid = ? AND isbn = ?";
+      await db.run(updateQuery, uuid, isbn);
       await db.close();
-      res.status(BAD_REQUEST);
-      res.type('text').send('Item already in cart.');
+      res.status(OK);
+      res.type('text').send('success');
+      // res.sendFile(__dirname + '/public/index.html');
     } else {
-      let insertQuery = "INSERT INTO cart (username, isbn) VALUES (?, ?)";
-      await db.run(insertQuery, username, isbn);
+      let insertQuery = "INSERT INTO cart (uuid, isbn, quantity) VALUES (?, ?, ?)";
+      await db.run(insertQuery, uuid, isbn, 1);
       await db.close();
       res.status(OK);
       res.type('text').send('success');
@@ -423,6 +421,8 @@ app.get('/inkflux/gethistory/:username', async (req, res) => {
     res.type('text').send('An error occurred on the server. Try again later.');
   }
 });
+
+
 
 /**
 * Establishes a database connection to the database and returns the database object.

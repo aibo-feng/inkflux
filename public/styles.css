@@ -390,8 +390,8 @@ body {
 }
 
 .item-add-to-cart:hover {
-  border-bottom: 2px solid #95C8D9;
-  color: #95C8D9;
+  border-bottom: 2px solid #448CAA;
+  color: #448CAA;
 }
 
 .item-add-to-cart-icon {
@@ -493,6 +493,14 @@ body {
 .cart-item > p {
   font-size: 20px;
   margin: 0;
+}
+
+.cart-item-title {
+  width: 500px;
+}
+
+.cart-item-quantity {
+  color: #448CAA;
 }
 
 #cart-footer {
